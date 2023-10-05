@@ -37,13 +37,13 @@ void disassembler(FILE* inf, FILE* outf) {
             case hlt: 
                 fprintf(outf, "hlt\n");
                 break;
-            case sqrt:
+            case sqrt_:
                 fprintf(outf, "sqrt\n");
                 break;
-            case sin:
+            case sin_:
                 fprintf(outf, "sin\n");
                 break;
-            case cos:
+            case cos_:
                 fprintf(outf, "cos\n");
                 break;
             case out:
@@ -63,12 +63,12 @@ int main(void) {
     FILE* in = nullptr;
     FILE* out = nullptr;
 
-    if ((in = fopen("codefile.txt", "r")) == NULL) {
+    if ((in = fopen("bytecode.txt", "r")) == NULL) {
         printf("File reading error");
         return 1;
     }
 
-    if ((out = fopen("bytecode.txt", "w")) == NULL) {
+    if ((out = fopen("source.txt", "w")) == NULL) {
         printf("File creating error");
         return 1;
     }

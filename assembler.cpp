@@ -30,11 +30,11 @@ void assembler(FILE* inf, FILE* outf) {
         } else if(strcmp(command, "hlt") == 0) {
             fprintf(outf, "%d\n", hlt);
         } else if(strcmp(command, "sqrt") == 0) {
-            fprintf(outf, "%d\n", sqrt);
+            fprintf(outf, "%d\n", sqrt_);
         } else if(strcmp(command, "sin") == 0) {
-            fprintf(outf, "%d\n", sin);
+            fprintf(outf, "%d\n", sin_);
         } else if(strcmp(command, "cos") == 0) {
-            fprintf(outf, "%d\n", cos);
+            fprintf(outf, "%d\n", cos_);
         } else if(strcmp(command, "out") == 0) {
             fprintf(outf, "%d\n", out);
         } else {
@@ -50,12 +50,12 @@ int main(void) {
     FILE* in = nullptr;
     FILE* out = nullptr;
 
-    if ((in = fopen("bytecode.txt", "r")) == NULL) {
+    if ((in = fopen("source.txt", "r")) == NULL) {
         printf("File reading error");
         return 1;
     }
 
-    if ((out = fopen("codefile.txt", "w")) == NULL) {
+    if ((out = fopen("bytecode.txt", "w")) == NULL) {
         printf("File creating error");
         return 1;
     }
