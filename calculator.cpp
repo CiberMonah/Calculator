@@ -7,12 +7,44 @@
 
 const int PRECISION = 100;
 
+
+//void processor_ctor...
+//processor d_tor
+
+void dump_processor(CPU* cpu, const char* file, const char* func, const int line) {
+    printf( "Dump called in file -%s\n"
+            "func - %s\n"
+            "line - %d\n", file, func, line);
+    printf( "rax - %d\n"
+            "rbx - %d\n"
+            "rcx - %d\n"
+            "rdx - %d\n");
+    printf("Commands");
+    for(int i = 0; cpu->CS[i] != HLT; i++)
+        printf("%d ", cpu->CS[i]);
+    printf("IP - %d\n", cpu->IP);
+    print_stack(cpu->stk);
+}
+
+//По кайфу добавить возращаемое значение ошибки
+
 int get_command(FILE* fp, int* command) {
     if(fscanf(fp, "%d", command) == EOF) {
         return 0;
     } else {
         return 1;
     }
+}
+
+cpu_error_type cpu_dtor(CPU* cpu) {
+    cpu->rax = 0;
+    cpu->rbx = 0;
+    cpu->rcx = 0;
+    cpu->rdx = 0;
+    cpu->CS = nullptr;
+    cpu->IP = 0;
+    stack_dtor(cpu->stk);
+    return CPU_NO_ERR;
 }
 
 void command_push(Stack* stk, Elem_t number) {
@@ -80,6 +112,24 @@ void command_sqrt(Stack* stk) {
     res = (int)(sqrt((double)number));
     command_push(stk, (Elem_t) (res * sqrt(PRECISION)) / PRECISION);
 }
+
+// void command_rpush(Processor* proc){
+//     Elem_t number = 0;
+//     command_pop(proc->stk, &number);
+//     proc->rax
+    
+// }
+
+// void command_rpop(Processor* proc){
+//     Elem_t number = 0;
+//     command_pop(proc->stk, &number);
+//     command_push(proc->stk, number);
+//     proc->rax
+    
+// }
+
+
+
 
 void command_in(Stack* stk) {
     printf("Input number - \n");

@@ -12,41 +12,41 @@ void disassembler(FILE* inf, FILE* outf) {
 
     while(fscanf(inf, "%d", &command) != EOF) {
         switch(command) {
-            case in: 
+            case IN: 
                 fprintf(outf, "in\n");
                 break;
-            case push:
+            case PUSH:
                 fscanf(inf, "%d", &number);
                 fprintf(outf, "push %d\n", number);
                 break;
-            case pop:
+            case POP:
                 fprintf(outf, "pop\n");
                 break;
-            case add:
+            case ADD:
                 fprintf(outf, "add\n");
                 break;
-            case div_:
+            case DIV:
                 fprintf(outf, "div\n");
                 break;
-            case mul:
+            case MUL:
                 fprintf(outf, "mul\n");
                 break;
-            case sup:
+            case SUP:
                 fprintf(outf, "sup\n");
                 break;
-            case hlt: 
+            case HLT: 
                 fprintf(outf, "hlt\n");
                 break;
-            case sqrt_:
+            case SQRT:
                 fprintf(outf, "sqrt\n");
                 break;
-            case sin_:
+            case SIN:
                 fprintf(outf, "sin\n");
                 break;
-            case cos_:
+            case COS:
                 fprintf(outf, "cos\n");
                 break;
-            case out:
+            case OUT:
                 fprintf(outf, "out\n");
                 break;
             default:

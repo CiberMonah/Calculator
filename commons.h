@@ -4,19 +4,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+const int VERSION = 1;
+char SIGNATURE[] = "CM";
+
 enum stack_commands {
-    push = 1,
-    pop = 2,
-    add = 3,
-    mul = 4,
-    div_ = 5,
-    sqrt_ = 6,
-    sup = 7,
-    sin_ = 8,
-    cos_ = 9,
-    in = 10,
-    out = 11,
-    hlt = -1
+    PUSH = 1,
+    POP = 2,
+    ADD = 3,
+    MUL = 4,
+    DIV = 5,
+    SQRT = 6,
+    SUP = 7,
+    SIN = 8,
+    COS = 9,
+    IN = 10,
+    OUT = 11,
+    HLT = -1,
+    RPUSH = 43,
+    RPOP = 33
+};
+
+enum cpu_error_type {
+    NO_ERR = 0,
+
+    READING_ERR = 1 << 1,
+    WRONG_COMMAND_ERROR = 1 << 2,
+
 };
 
 #endif

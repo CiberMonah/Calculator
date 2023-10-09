@@ -13,30 +13,30 @@ void assembler(FILE* inf, FILE* outf) {
 
     while(fscanf(inf, "%s", command) != EOF) {
         if(strcmp(command, "in") == 0) {
-            fprintf(outf, "%d\n", in);
+            fprintf(outf, "%d\n", IN);
         } else if(strcmp(command, "push") == 0) {
             fscanf(inf, "%d", &number);
-            fprintf(outf, "%d %d\n", push, number);
+            fprintf(outf, "%d %d\n", PUSH, number);
         } else if(strcmp(command, "pop") == 0)  {
-            fprintf(outf, "%d\n", pop);
+            fprintf(outf, "%d\n", POP);
         } else if(strcmp(command, "add") == 0) {
-            fprintf(outf, "%d\n", add);
+            fprintf(outf, "%d\n", ADD);
         } else if(strcmp(command, "div") == 0) {
-            fprintf(outf, "%d\n", div_);
+            fprintf(outf, "%d\n", DIV);
         } else if(strcmp(command, "mul") == 0) {
-            fprintf(outf, "%d\n", mul);
+            fprintf(outf, "%d\n", MUL);
         } else if(strcmp(command, "sup") == 0) {
-            fprintf(outf, "%d\n", sup);
+            fprintf(outf, "%d\n", SUP);
         } else if(strcmp(command, "hlt") == 0) {
-            fprintf(outf, "%d\n", hlt);
+            fprintf(outf, "%d\n", HLT);
         } else if(strcmp(command, "sqrt") == 0) {
-            fprintf(outf, "%d\n", sqrt_);
+            fprintf(outf, "%d\n", SQRT);
         } else if(strcmp(command, "sin") == 0) {
-            fprintf(outf, "%d\n", sin_);
+            fprintf(outf, "%d\n", SIN);
         } else if(strcmp(command, "cos") == 0) {
-            fprintf(outf, "%d\n", cos_);
+            fprintf(outf, "%d\n", COS);
         } else if(strcmp(command, "out") == 0) {
-            fprintf(outf, "%d\n", out);
+            fprintf(outf, "%d\n", OUT);
         } else {
             printf("Wrong command: %s\n", command);
             assert(0);

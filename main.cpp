@@ -20,42 +20,42 @@ int main(void) {
 
     while(get_command(source, &command)) {
         switch(command){
-            case add:
+            case ADD:
                 command_add(&stk);
                 break;
-            case mul:
+            case MUL:
                 command_mul(&stk);
                 break;
-            case push:
+            case PUSH:
                 fscanf(source, "%d", &number);
                 command_push(&stk, number);
                 break;
-            case pop:
+            case POP:
                 command_pop(&stk, &number);
                 number = 0;
                 break;
-            case out:
+            case OUT:
                 command_out(&stk);
                 break;
-            case div_:
+            case DIV:
                 command_div(&stk);
                 break;
-            case cos_:
+            case COS:
                 command_cos(&stk);
                 break;
-            case sin_:
+            case SIN:
                 command_sin(&stk);
                 break;
-            case sup:
+            case SUP:
                 command_sup(&stk);
                 break;
-            case sqrt_:
+            case SQRT:
                 command_sqrt(&stk);
                 break;
-            case in:
+            case IN:
                 command_in(&stk);
                 break;
-            case hlt:
+            case HLT:
                 return 0;
             default:
                 printf("Command - %d is not exist\n", command);

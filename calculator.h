@@ -2,6 +2,29 @@
 #define CALCULATOR_H_INCLUDED
 #include "stack.h"
 
+#define PRC_DUMP(prc) ({                                                 \
+    dump_processor((prc), __FILE__, __PRETTY_FUNCTION__, __LINE__);      \
+    })
+
+struct CPU {
+    int rax = 0;
+    int rbx = 0;
+    int rcx = 0;
+    int rdx = 0;
+    int* CS = NULL;
+    int IP = 0;
+    Stack* stk;
+};
+
+enum cpu_error_type {
+    NO_ERR = 0,
+
+    READING_ERR = 1 << 1,
+    WRONG_COMMAND_ERROR = 1 << 2,
+
+};
+
+void dump_processor(CPU* cpu) ;
 void command_add(Stack* stk);
 void command_out(Stack* stk);
 void command_mul(Stack* stk);
