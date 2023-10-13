@@ -18,7 +18,7 @@ void dump_processor(CPU* cpu, const char* file, const char* func, const int line
     printf( "rax - %d\n"
             "rbx - %d\n"
             "rcx - %d\n"
-            "rdx - %d\n");
+            "rdx - %d\n", cpu->rax, cpu->rbx, cpu->rcx, cpu->rdx);
     printf("Commands");
     for(int i = 0; cpu->CS[i] != HLT; i++)
         printf("%d ", cpu->CS[i]);

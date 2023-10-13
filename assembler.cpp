@@ -1,9 +1,25 @@
 #include "commons.h"
 #include <string.h>
 #include <assert.h>
+#include "assembler.h"
 
 
-void assembler(FILE* inf, FILE* outf);
+
+cpu_error_type create_op(char* name, cpu_commands com_id, int argn, cpu_arguments arg_arr[], CPU_OP* operation) {
+    operation->name = name;
+    operation->com_id = com_id;
+    operation->argn = argn;
+    operation->cpu_argv = arg_arr;
+}
+
+cpu_error_type creat_reg(char* name, cpu_registers value, CPU_REG* reg) {
+    reg->name = name;
+    reg->value = value;
+}
+
+cpu_error_type read_commands(FILE* inf, FILE* outf) {
+
+}
 
 void assembler(FILE* inf, FILE* outf) {
     printf("Starting assembler\n");

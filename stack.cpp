@@ -191,7 +191,7 @@ static stack_error_type error_show(Stack* stk) {
     if(tmp & STACK_OUT_OF_INDEX_ERR)
         printf("Out of index error\n");
     if(tmp & STACK_IS_NOT_EXIST)
-        printf("Stack is not exist\n");S
+        printf("Stack is not exist\n");
     if(tmp & STACK_CANARY_ERR)
         printf("Stack canary error\n");
     if(tmp & STACK_SIZE_ERR)
@@ -254,10 +254,10 @@ static stack_error_type print_error(FILE* dumpfile, stack_error_type error) {
     if(error == STACK_MEM_ALLOC_ERR) {
         fprintf(dumpfile, "Memory allocation error\n");
         return error;
-    } else if(error == NULL_PTR_ERR) {
+    } else if(error == STACK_NULL_PTR_ERR) {
         fprintf(dumpfile, "Pointer is Null\n");
         return error;
-    } else if(error == OUT_OF_INDEX_ERR) {
+    } else if(error == STACK_OUT_OF_INDEX_ERR) {
         fprintf(dumpfile, "Index is out of range\n");
         return error;
     } else if(error == STACK_IS_NOT_EXIST) {
@@ -266,7 +266,7 @@ static stack_error_type print_error(FILE* dumpfile, stack_error_type error) {
     } else if(error == STACK_HASH_ERR) {
         fprintf(dumpfile, "Hash error\n");
         return error;
-    } else if(error == NO_VOID_ELEM_ERR) {
+    } else if(error == STACK_NO_VOID_ELEM_ERR) {
         fprintf(dumpfile, "Not all void elems have NO_ELEM value\n");
     }
 
@@ -301,7 +301,7 @@ long hasher (Stack* stk) {
 
 bool check_error(Stack* stk) {
     if(stk == NULL) {
-        put_error(stk, NULL_PTR_ERR);
+        put_error(stk, STACK_NULL_PTR_ERR);
         printf("Cant detect because stk is nullptr\n");
 
         return 1;
@@ -317,13 +317,4 @@ bool check_error(Stack* stk) {
         return 0;
     else
         return 1;
-}
-
-void execution(Stack* stk) {
-    printf("Destroying...\n");
-    for(int i = 0; i < 1000; i++){
-        stack_push(stk, rand() % 100);
-        printf("STACK HASH - %lu HASHER - %lu ITERATION - %d\n", stk->hash, hasher(stk), i);
-    }
-    printf("Destroy finished\n");
 }

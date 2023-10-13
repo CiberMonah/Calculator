@@ -20,17 +20,17 @@ const int CAPACITY_MULTIPLIER = 2;
 const int CAPACITY_GISTERESIS = 2;
 
 enum stack_error_type {
-    STACK_NO_ERR                 = 0 << 0,
+    STACK_NO_ERR              = 0 << 0,
 
-    STACK_MEM_ALLOC_ERR         = 1 << 1,
-    STACK_NULL_PTR_ERR          = 1 << 2,
-    STACK_OUT_OF_INDEX_ERR      = 1 << 3,
-    STACK_IS_NOT_EXIST          = 1 << 4,
-    STACK_CANARY_ERR            = 1 << 5,
-    STACK_SIZE_ERR              = 1 << 6,
-    STACK_HASH_ERR              = 1 << 7,
-    STACK_VERIFICATION_ERR      = 1 << 9,
-    STACK_NO_VOID_ELEM_ERR      = 1 << 9,
+    STACK_MEM_ALLOC_ERR       = 1 << 1,
+    STACK_NULL_PTR_ERR        = 1 << 2,
+    STACK_OUT_OF_INDEX_ERR    = 1 << 3,
+    STACK_IS_NOT_EXIST  = 1 << 4,
+    STACK_CANARY_ERR    = 1 << 5,
+    STACK_SIZE_ERR      = 1 << 6,
+    STACK_HASH_ERR      = 1 << 7,
+    STACK_VERIFICATION_ERR    = 1 << 8,
+    STACK_NO_VOID_ELEM_ERR    = 1 << 9,
 };
 
 struct Stack {
@@ -40,7 +40,7 @@ struct Stack {
     int size        = 0;
     int capacity    = 0;
     bool is_exist   = 0;
-    int errors = NO_ERR;
+    int errors = STACK_NO_ERR;
 
     int              line =    0;
     const char*      name = NULL;
@@ -65,6 +65,5 @@ long hasher (Stack* stk);
 stack_error_type print_stack(Stack* stk);
 bool check_error (Stack* stk);
 int stack_verificator(Stack* stk);
-void execution(Stack* stk);
 
 #endif // STACK_H_INCLUDED

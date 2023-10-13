@@ -5,6 +5,8 @@
 
 void disassembler(FILE* inf, FILE* outf);
 
+
+
 void disassembler(FILE* inf, FILE* outf) {
     printf("Starting disassembler\n");
     
