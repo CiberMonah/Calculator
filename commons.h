@@ -3,45 +3,67 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "assembler.h"
 
 const int VERSION = 1;
 char SIGNATURE[] = "CM";
 
-enum cpu_commands {
-    PUSH = 1,
-    POP = 2,
-    ADD = 3,
-    MUL = 4,
-    DIV = 5,
-    SQRT = 6,
-    SUP = 7,
-    SIN = 8,
-    COS = 9,
-    IN = 10,
-    OUT = 11,
-    HLT = -1,
-    RPUSH = 43,
-    RPOP = 33
+
+const int MAX_LENGTH_OF_CMD = 5;
+
+
+enum cpu_commands_id {
+    WRONG_COMMAND   = 0 ,
+
+    PUSH            = 1 ,
+    POP             = 2 ,
+    ADD             = 3 ,
+    MUL             = 4 ,
+    DIV             = 5 ,
+    SQRT            = 6 ,
+    SUP             = 7 ,
+    SIN             = 8 ,
+    COS             = 9 ,
+    IN              = 10,
+    OUT             = 11,
+    HLT             = 12,
+    RPOP            = 13,
+    RPUSH           = 14,
+    JMP             = 15,
+    LBL             = 16,
 };
 
-enum cpu_arguments {
-    N = 1,
-    R = 1 << 1,
+struct CPU_OP {
+    const char*     name                            = nullptr;
+
+    cpu_commands_id com_id                          = WRONG_COMMAND;
+    int             argn                            = 0;
+
+    cpu_arguments   cpu_argvt[MAX_ARGN]             = {};
+    Elem_t          cpu_argv [MAX_ARGN]             = {};
+    cpu_registers   cpu_regv [MAX_ARGN]             = {};
 };
 
-enum cpu_registers {
-    rax = 1,
-    rbx = 1 << 1,
-    rcx = 1 << 2,
-    cdx = 1 << 3,
+const CPU_OP ALL_COMMANDS[50] {                                 //!ORDER IS IMPORTANT!
+                                                                //The array element is accessed by the command code that matches the number in the array
+    {"wrong",           WRONG_COMMAND,  0,      {},     {},     {}      },
+    {"push",            PUSH,           1,      {B},    {},     {}      },
+    {"pop",             POP,            1,      {B},    {},     {}      },
+    {"add",             ADD,            0,      {},     {},     {}      },
+    {"mul",             MUL,            0,      {},     {},     {}      },
+    {"div",             DIV,            0,      {},     {},     {}      },
+    {"sqrt",            SQRT,           0,      {},     {},     {}      },
+    {"sup",             SUP,            0,      {},     {},     {}      },
+    {"sin",             SIN,            0,      {},     {},     {}      },
+    {"cos",             COS,            0,      {},     {},     {}      },
+    {"in",              IN,             1,      {},     {},     {}      },
+    {"out",             OUT,            0,      {},     {},     {}      },
+    {"hlt",             HLT,            0,      {},     {},     {}      },
+    {"rpop",            RPOP,           0,      {R},    {},     {}      },
+    {"rpush",           RPUSH,          0,      {R},    {},     {}      },
+    {"jmp",             JMP,            0,      {},     {},     {}      }
 };
 
-enum cpu_error_type {
-    CPU_NO_ERR = 0,
 
-    CPU_READING_ERR = 1 << 1,
-    CPU_WRONG_COMMAND_ERROR = 1 << 2,
-    CPU_WRONG_ARGUMENT_ERROR = 1 << 3,
-};
 
 #endif

@@ -5,7 +5,7 @@
 #include "calculator.h"
 #include <math.h>
 
-const int PRECISION = 100;
+const int PRECISION = 1;
 
 
 //void processor_ctor...

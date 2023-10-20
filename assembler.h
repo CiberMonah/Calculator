@@ -1,22 +1,44 @@
 #ifndef ASSEMBLER_H_INCLUDED
 #define ASSEMBLER_H_INCLUDED
-#include "commons.h";
+#include "commons.h"
+#include "stack.h"
+#include "calculator.h"
 
-struct CPU_OP {
-    const char* name = nullptr;
-    cpu_commands com_id = POP;
-    int argn = 0;
-    cpu_arguments* cpu_argv = nullptr;
+const int MAX_ARGN          = 100;
+const int NUMBER_OF_CMD     = 100;
+const int NUMBER_OF_LABELS  = 10;
+
+struct LABEL {
+    int name                = 0;
+    int ptr                 = -1;
 };
+
+enum cpu_arguments {
+    NONE_ARG        = 0,
+
+    N               = 1,
+    R               = 1 << 1,
+    B               = N | R,
+    L               = 1 << 2,
+};
+
+enum cpu_registers {
+    NONE            = 0,
+
+    RAX             = 1,
+    RBX             = 1 << 1,
+    RCX             = 1 << 2,
+    RDX             = 1 << 3,
+};
+
+LABEL LABELS[NUMBER_OF_LABELS] = {};
 
 struct CPU_REG {
-    const char* name = nullptr;
-    cpu_registers value = rax;
+    const char*     name                = nullptr;
+    cpu_registers   value               = NONE;
 };
 
-void assembler(FILE* inf, FILE* outf);
-cpu_error_type creat_op(char* name, cpu_commands com_id, int argn, cpu_arguments arg_arr[], CPU_OP* operation);
-
+void assembler(FILE* inf, FILE* outf, FILE* log);
 
 
 #endif
