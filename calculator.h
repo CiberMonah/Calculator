@@ -9,10 +9,10 @@
     })
 
 struct CPU {
-    int rax = 0;
-    int rbx = 0;
-    int rcx = 0;
-    int rdx = 0;
+    int RAX = 0;
+    int RBX = 0;
+    int RCX = 0;
+    int RDX = 0;
     int* CS = NULL;
     int IP = 0;
     Stack* stk;

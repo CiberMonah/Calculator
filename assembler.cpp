@@ -82,52 +82,59 @@ static int get_label(char* str, int ptr) {                          //6Lya IsPrA
     return -1;
 }
 
-static cpu_commands_id get_command(FILE* inf, char* command, int* ptr) {
-    if(fscanf(inf, "%s", command) == EOF)
-        return HLT;
-    if (get_label(command, *ptr) != -1)
+static cpu_commands_id get_command(FILE* inf, char** command, int* ptr) {
+    *command = (char*)calloc(MAX_LENGTH_OF_CMD, sizeof(char));        //ALLOC memory for new pointer to name
+
+    if(fscanf(inf, "%s", *command) == EOF)
+        return WRONG_COMMAND;
+    if (get_label(*command, *ptr) != -1)
         return LBL;
 
-    if(strcmp(command, "in") == 0) {
-            return IN;
-        } else if(strcmp(command, "push") == 0) {
-            return PUSH;
-        } else if(strcmp(command, "pop") == 0)  {
-            return POP;
-        } else if(strcmp(command, "add") == 0) {
-            return ADD;
-        } else if(strcmp(command, "div") == 0) {
-            return DIV;
-        } else if(strcmp(command, "mul") == 0) {
-            return MUL;
-        } else if(strcmp(command, "sup") == 0) {
-            return SUP;
-        } else if(strcmp(command, "hlt") == 0) {
-            return HLT;
-        } else if(strcmp(command, "sqrt") == 0) {
-            return SQRT;
-        } else if(strcmp(command, "sin") == 0) {
-            return SIN;
-        } else if(strcmp(command, "cos") == 0) {
-            return COS;
-        } else if(strcmp(command, "out") == 0) {
-            return OUT;
-        } else {
-            return WRONG_COMMAND;
-        }
+    if(strcmp(*command, "in") == 0) {
+        return IN;
+    } else if(strcmp(*command, "push") == 0) {
+        return PUSH;
+    } else if(strcmp(*command, "pop") == 0)  {
+        return POP;
+    } else if(strcmp(*command, "add") == 0) {
+        return ADD;
+    } else if(strcmp(*command, "div") == 0) {
+        return DIV;
+    } else if(strcmp(*command, "mul") == 0) {
+        return MUL;
+    } else if(strcmp(*command, "sup") == 0) {
+        return SUP;
+    } else if(strcmp(*command, "hlt") == 0) {
+        return HLT;
+    } else if(strcmp(*command, "sqrt") == 0) {
+        return SQRT;
+    } else if(strcmp(*command, "sin") == 0) {
+        return SIN;
+    } else if(strcmp(*command, "cos") == 0) {
+        return COS;
+    } else if(strcmp(*command, "out") == 0) {
+        return OUT;
+    } else {
+        return WRONG_COMMAND;
+    }
 }
 
 static cpu_error_type read_commands(FILE* inf, const CPU_OP* operations, CPU_OP** op_buffer, int* number_of_lines) {
-    char command [MAX_LENGTH_OF_CMD] = "";
     int counter = 0;
-    cpu_error_type err = CPU_NO_ERR;
+    char* command = nullptr;
 
-    cpu_commands_id command_id = get_command(inf, command, &counter);
-    printf("CHZH - %d\n", command_id);
+    cpu_error_type err = CPU_NO_ERR;
+    cpu_commands_id command_id = get_command(inf, &command, &counter);
+
 
     while(command_id != WRONG_COMMAND) {
-        op_buffer[counter]->name = command;
-        op_buffer[counter]->com_id = command_id;
+        op_buffer[counter]->name        = command;
+        op_buffer[counter]->com_id      = command_id;
+        op_buffer[counter]->argn        = operations[command_id].argn;
+
+        printf("Get command %s - %d\n", command, command_id);
+        printf("command: %s\n", op_buffer[counter]->name);
+        
         for(int i = 0; i < operations[command_id].argn; i++) {                  //GETTING ARGUMENTS
             //printf("cpu arg type - %d\n", operations[command_id].cpu_argvt[i]);
             err = get_arg(inf, operations[command_id].cpu_argvt[i], op_buffer[counter]->cpu_regv, &op_buffer[counter]->cpu_argv[i]);
@@ -136,11 +143,9 @@ static cpu_error_type read_commands(FILE* inf, const CPU_OP* operations, CPU_OP*
         }
         if(err != CPU_NO_ERR)
             return err;
-        command_id = get_command(inf, command, &counter);
-        printf("Get command %s - %d\n", command, command_id);
         counter++;
-    }
-    printf("SEGFAULT\n");
+        command_id = get_command(inf, &command, &counter);
+    } 
     *number_of_lines = counter;
     return CPU_NO_ERR;
 }
@@ -158,12 +163,12 @@ static cpu_error_type print_assemble_commands(FILE* outf, CPU_OP* op_buffer[NUMB
 
     if(listing != NULL) {
         for(int i = 0; i < number_of_lines; i++) {
-            fprintf(listing, "command:%s was assembled to code : %d\n", op_buffer[i]->name, op_buffer[i]->com_id);
+            fprintf(listing, "command: %s was assembled to code : %d; ", op_buffer[i]->name, op_buffer[i]->com_id);
             
-            fprintf(listing, "Number of arguments: %d", op_buffer[i]->argn);
+            fprintf(listing, "number of arguments: %d;\n", op_buffer[i]->argn);
 
             for(int j = 0; j < op_buffer[i]->argn; j++)
-                fprintf(outf, "Argument[%d]: %d\n", j, op_buffer[i]->cpu_argv[j]);
+                fprintf(listing, "Argument[%d]: %d\n", j, op_buffer[i]->cpu_argv[j]);
         }
     }
 
@@ -192,13 +197,13 @@ void assembler(FILE* inf, FILE* outf, FILE* log) {
 
     read_commands(inf, ALL_COMMANDS, commands, &lines);
 
-    for(int i = 0; i < NUMBER_OF_CMD; i++) {    
-                                                                        //print buf
-        printf("COMMAND[%d]\nName: %s\nId: %d\n", i, commands[i]->name, commands[i]->com_id);
-    }
+    // for(int i = 0; i < NUMBER_OF_CMD; i++) {    
+    //                                                                      //print buf
+    //     printf("COMMAND[%d]\nName: %s\nId: %d\n", i, commands[i]->name, commands[i]->com_id);
+    // }
 
     print_assemble_commands(outf, commands, lines, log);
-
+    free(buffer);
     printf("Assembler finished\n");
 }
 

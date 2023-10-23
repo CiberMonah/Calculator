@@ -13,7 +13,7 @@ const int MAX_LENGTH_OF_CMD = 5;
 
 
 enum cpu_commands_id {
-    WRONG_COMMAND   = 0 ,
+    WRONG_COMMAND   =  -1,
 
     PUSH            = 1 ,
     POP             = 2 ,
@@ -46,7 +46,7 @@ struct CPU_OP {
 
 const CPU_OP ALL_COMMANDS[50] {                                 //!ORDER IS IMPORTANT!
                                                                 //The array element is accessed by the command code that matches the number in the array
-    {"wrong",           WRONG_COMMAND,  0,      {},     {},     {}      },
+    {"wrong",           WRONG_COMMAND,  -1,     {},     {},     {}      },
     {"push",            PUSH,           1,      {B},    {},     {}      },
     {"pop",             POP,            1,      {B},    {},     {}      },
     {"add",             ADD,            0,      {},     {},     {}      },

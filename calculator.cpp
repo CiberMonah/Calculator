@@ -18,7 +18,7 @@ void dump_processor(CPU* cpu, const char* file, const char* func, const int line
     printf( "rax - %d\n"
             "rbx - %d\n"
             "rcx - %d\n"
-            "rdx - %d\n", cpu->rax, cpu->rbx, cpu->rcx, cpu->rdx);
+            "rdx - %d\n", cpu->RAX, cpu->RBX, cpu->RCX, cpu->RDX);
     printf("Commands");
     for(int i = 0; cpu->CS[i] != HLT; i++)
         printf("%d ", cpu->CS[i]);
@@ -37,10 +37,10 @@ int get_command(FILE* fp, int* command) {
 }
 
 cpu_error_type cpu_dtor(CPU* cpu) {
-    cpu->rax = 0;
-    cpu->rbx = 0;
-    cpu->rcx = 0;
-    cpu->rdx = 0;
+    cpu->RAX = 0;
+    cpu->RBX = 0;
+    cpu->RCX = 0;
+    cpu->RDX = 0;
     cpu->CS = nullptr;
     cpu->IP = 0;
     stack_dtor(cpu->stk);
