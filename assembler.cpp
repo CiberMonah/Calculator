@@ -21,6 +21,10 @@ static cpu_error_type ctor_op(CPU_OP* operation) {
     operation->com_id = WRONG_COMMAND;
     operation->argn = 0;
 
+    for(int i = 0; i < MAX_ARGN; i++) {
+        operation->cpu_argv[i] = POISON_VALUE;
+    }
+
     return CPU_NO_ERR;
 }
 
@@ -32,7 +36,7 @@ static cpu_error_type ctor_op(CPU_OP* operation) {
 // }
 
 static cpu_error_type get_arg(FILE* inf, cpu_arguments argt, cpu_registers* reg, Elem_t* argv) {
-    char* str = nullptr;
+    char* str = (char*)calloc(3, sizeof(char));
 
     if(argt == N) {
         if(fscanf(inf, "%d", argv) == 0)
@@ -40,6 +44,7 @@ static cpu_error_type get_arg(FILE* inf, cpu_arguments argt, cpu_registers* reg,
         else 
             return CPU_NO_ERR;
     } else if (argt == R) {
+        fscanf(inf, "%s", str);
         if      (strcmp(str, "rax") == 0)
             (*reg) = RAX;
         else if (strcmp(str, "rbx") == 0)
@@ -53,22 +58,27 @@ static cpu_error_type get_arg(FILE* inf, cpu_arguments argt, cpu_registers* reg,
     }
     if (argt == B) {
         if(fscanf(inf, "%d", argv) == 1) {
-            return CPU_NO_ERR; 
-        } else if (fscanf(inf, "%s", str) == 1) {
-            if      (strcmp(str, "rax") == 0)
+            return CPU_NO_ERR;
+        } else {
+            fscanf(inf, "%s", str);
+            if      (strcmp(str, "rax") == 0) {
                 (*reg) = RAX;
-            else if (strcmp(str, "rbx") == 0)
+                return CPU_NO_ERR;
+            } else if (strcmp(str, "rbx") == 0) {
                 (*reg) = RBX;
-            else if (strcmp(str, "rcx") == 0)
+                return CPU_NO_ERR;
+            } else if (strcmp(str, "rcx") == 0) {
                 (*reg) = RCX;
-            else if (strcmp(str, "rdx") == 0)
+                return CPU_NO_ERR;
+            } else if (strcmp(str, "rdx") == 0) {
                 (*reg) = RDX;
-            else 
+                return CPU_NO_ERR;
+            } else {
                 return CPU_WRONG_REGISTER_ERR;
-        }
+            }
         return CPU_WRONG_ARGUMENT_ERR;
+        }
     }
-    
     return CPU_NO_ERR;
 }
 
@@ -114,6 +124,10 @@ static cpu_commands_id get_command(FILE* inf, char** command, int* ptr) {
         return COS;
     } else if(strcmp(*command, "out") == 0) {
         return OUT;
+    } else if(strcmp(*command, "rpush") == 0) {
+        return RPUSH;
+    } else if(strcmp(*command, "rpop") == 0) {
+        return RPOP;
     } else {
         return WRONG_COMMAND;
     }
@@ -132,17 +146,24 @@ static cpu_error_type read_commands(FILE* inf, const CPU_OP* operations, CPU_OP*
         op_buffer[counter]->com_id      = command_id;
         op_buffer[counter]->argn        = operations[command_id].argn;
 
-        // printf("Get command %s - %d\n", command, command_id);
-        // printf("command: %s\n", op_buffer[counter]->name);
+        printf("Get command %s - %d\n", command, command_id);
+        printf("command: %s\n", op_buffer[counter]->name);
         
         for(int i = 0; i < operations[command_id].argn; i++) {                  //GETTING ARGUMENTS
             //printf("cpu arg type - %d\n", operations[command_id].cpu_argvt[i]);
+
             err = get_arg(inf, operations[command_id].cpu_argvt[i], op_buffer[counter]->cpu_regv, &op_buffer[counter]->cpu_argv[i]);
             //printf("ARGUMENT - %d\n", op_buffer[counter]->cpu_argv[i]);
-            //printf("error - %d\n", err);
+        }
+
+        if(op_buffer[counter]->cpu_argv[0] == POISON_VALUE && op_buffer[counter]->argn > 0 ) {
+            if(command_id == PUSH) op_buffer[counter]->com_id = RPUSH;
+            else if (command_id == RPUSH) op_buffer[counter]->com_id = RPOP;
         }
         if(err != CPU_NO_ERR)
             return err;
+        
+
         counter++;
         command_id = get_command(inf, &command, &counter);
     } 
@@ -154,10 +175,17 @@ static cpu_error_type print_assemble_commands(FILE* outf, CPU_OP* op_buffer[NUMB
     cpu_error_type err = CPU_NO_ERR;
 
     for(int i = 0; i < number_of_lines; i++) {
-        fprintf(outf, "%d", op_buffer[i]->com_id);
+        fprintf(outf, "%d ", op_buffer[i]->com_id);
 
-        for(int j = 0; j < op_buffer[i]->argn; j++)
-            fprintf(outf, " %d", op_buffer[i]->cpu_argv[j]);
+        if(op_buffer[i]->argn > 0) {
+            if(op_buffer[i]->cpu_argv[0] != POISON_VALUE) {                     //ЕСЛИ АРГУМЕНТ ЧИСЛО ТО ВЫВОДИ ЧИСЛА
+                for(int j = 0; j < op_buffer[i]->argn; j++)
+                    fprintf(outf, "%d ", op_buffer[i]->cpu_argv[j]);
+            } else {
+                for(int j = 0; j < op_buffer[i]->argn; j++)                     //ЕСЛИ АРГУМЕНТ РЕГСИТЕР ТО ВЫВОДИ РЕГИСТРЫ
+                    fprintf(outf, "%d ", op_buffer[i]->cpu_regv[j]);
+            }   
+        }
         fprintf(outf, "\n");
     }
 
@@ -167,8 +195,17 @@ static cpu_error_type print_assemble_commands(FILE* outf, CPU_OP* op_buffer[NUMB
             
             fprintf(listing, "number of arguments: %d;\n", op_buffer[i]->argn);
 
-            for(int j = 0; j < op_buffer[i]->argn; j++)
-                fprintf(listing, "Argument[%d]: %d\n", j, op_buffer[i]->cpu_argv[j]);
+            if(op_buffer[i]->argn > 0) {
+                if(op_buffer[i]->cpu_argv[0] != POISON_VALUE) {                     //ЕСЛИ АРГУМЕНТ ЧИСЛО ТО ВЫВОДИ ЧИСЛА
+                    for(int j = 0; j < op_buffer[i]->argn; j++)
+                        fprintf(listing, "INT ARGUMENT[%i] %d", j, op_buffer[i]->cpu_argv[j]);
+                    fprintf(listing, "\n");
+                } else {
+                    for(int j = 0; j < op_buffer[i]->argn; j++)                     //ЕСЛИ АРГУМЕНТ РЕГСИТЕР ТО ВЫВОДИ РЕГИСТРЫ
+                        fprintf(listing, "REG ARGUMENT[%i] %d", j, op_buffer[i]->cpu_regv[j]);
+                    fprintf(listing, "\n");
+                }
+            }
         }
     }
 
@@ -178,11 +215,18 @@ static cpu_error_type print_assemble_commands(FILE* outf, CPU_OP* op_buffer[NUMB
         for(int i = 0; i < number_of_lines; i++) {
             buf[k] = op_buffer[i]->com_id;
             k++;
-
-            for(int j = 0; j < op_buffer[i]->argn; j++) {
-                buf[k] = (char)op_buffer[i]->cpu_argv[j];
-                k++;
+            if(op_buffer[i]->cpu_argv[0] != POISON_VALUE) {
+                for(int j = 0; j < op_buffer[i]->argn; j++ ) {
+                    buf[k] = (char)op_buffer[i]->cpu_argv[j];
+                    k++;
+                }
+            } else {
+                for(int j = 0; j < op_buffer[i]->argn; j++ ) {
+                    buf[k] = (char)op_buffer[i]->cpu_regv[j];
+                    k++;
+                }
             }
+
         }
         fwrite(buf, sizeof(char), k, binary);
     }

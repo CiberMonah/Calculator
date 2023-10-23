@@ -7,11 +7,7 @@
 const int MAX_ARGN          = 3;
 const int NUMBER_OF_CMD     = 100;
 const int NUMBER_OF_LABELS  = 10;
-
-struct LABEL {
-    int name                = 0;
-    int ptr                 = -1;
-};
+const int POISON_VALUE      = 999;
 
 enum cpu_arguments {
     NONE_ARG        = 0,
@@ -31,12 +27,18 @@ enum cpu_registers {
     RDX             = 1 << 3,
 };
 
-LABEL LABELS[NUMBER_OF_LABELS] = {};
-
 struct CPU_REG {
     const char*     name                = nullptr;
     cpu_registers   value               = NONE;
 };
+
+struct LABEL {
+    int name                = 0;
+    int ptr                 = -1;
+};
+
+LABEL LABELS[NUMBER_OF_LABELS] = {};
+
 
 void assembler(FILE* inf, FILE* outf, FILE* log, FILE* bin);
 

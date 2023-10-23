@@ -5,7 +5,7 @@
 int main(void) {
     Stack stk = {};
     FILE* source = nullptr;
-
+    
     if ((source = fopen("bytecode.txt", "r")) == NULL) {
         printf("File reading error");
         return 1;
@@ -15,8 +15,6 @@ int main(void) {
 
     int command = 0;
     Elem_t number = 0;
-
-    // printf("welcome to cuclus clan command - %d", command);
 
     while(get_command(source, &command)) {
         switch(command){
