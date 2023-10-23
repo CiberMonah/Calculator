@@ -28,6 +28,10 @@ static cpu_error_type ctor_op(CPU_OP* operation) {
     return CPU_NO_ERR;
 }
 
+//static cpu_error_type as_verificator () {}                                                        ///
+
+//dtor                                                                                              ///
+
 // static cpu_error_type create_reg(char* name, cpu_registers value, CPU_REG* reg) {
 //     reg->name   = name;
 //     reg->value  = value;
@@ -78,15 +82,18 @@ static cpu_error_type get_arg(FILE* inf, cpu_arguments argt, cpu_registers* reg,
             }
         return CPU_WRONG_ARGUMENT_ERR;
         }
+    } else if(argt == L) {
+        fscanf(inf, "%d", argv);
     }
     return CPU_NO_ERR;
 }
 
 static int get_label(char* str, int ptr) {                          //6Lya IsPrAvb PZ
     if(str[0] == ':')  {
-        LABELS[str[1] - '0'].name   = str[1] - '0';                 //DA-DA imya labela est ego nomer poka chto
+        LABELS[str[1] - '0'].name   = str[1] - '0' + 1;                 //DA-DA imya labela est ego nomer poka chto
 
         LABELS[str[1] - '0'].ptr    = ptr;                          //Kladem v ukazatel lablenomer kuda hotim tepnutsa
+        return 1;
     }
 
     return -1;
@@ -97,9 +104,9 @@ static cpu_commands_id get_command(FILE* inf, char** command, int* ptr) {
 
     if(fscanf(inf, "%s", *command) == EOF)
         return WRONG_COMMAND;
-    if (get_label(*command, *ptr) != -1)
+    if (get_label(*command, *ptr) == 1) {
         return LBL;
-
+    }
     if(strcmp(*command, "in") == 0) {
         return IN;
     } else if(strcmp(*command, "push") == 0) {
@@ -128,7 +135,9 @@ static cpu_commands_id get_command(FILE* inf, char** command, int* ptr) {
         return RPUSH;
     } else if(strcmp(*command, "rpop") == 0) {
         return RPOP;
-    } else {
+    } else if(strcmp(*command, "jmp") == 0) {
+        return JMP;
+    }else {
         return WRONG_COMMAND;
     }
 }
@@ -151,9 +160,15 @@ static cpu_error_type read_commands(FILE* inf, const CPU_OP* operations, CPU_OP*
         
         for(int i = 0; i < operations[command_id].argn; i++) {                  //GETTING ARGUMENTS
             //printf("cpu arg type - %d\n", operations[command_id].cpu_argvt[i]);
-
             err = get_arg(inf, operations[command_id].cpu_argvt[i], op_buffer[counter]->cpu_regv, &op_buffer[counter]->cpu_argv[i]);
             //printf("ARGUMENT - %d\n", op_buffer[counter]->cpu_argv[i]);
+        }
+
+        if(command_id == LBL) 
+            counter--;
+
+        if(command_id == JMP) {
+            op_buffer[counter]->cpu_argv[0] = LABELS[op_buffer[counter]->cpu_argv[0]].ptr;
         }
 
         if(op_buffer[counter]->cpu_argv[0] == POISON_VALUE && op_buffer[counter]->argn > 0 ) {
@@ -191,7 +206,7 @@ static cpu_error_type print_assemble_commands(FILE* outf, CPU_OP* op_buffer[NUMB
 
     if(listing != NULL) {
         for(int i = 0; i < number_of_lines; i++) {
-            fprintf(listing, "command: %s was assembled to code : %d; ", op_buffer[i]->name, op_buffer[i]->com_id);
+            fprintf(listing, "command: %s was assembled to code : %d; pointer : %d\n", op_buffer[i]->name, op_buffer[i]->com_id, i);
             
             fprintf(listing, "number of arguments: %d;\n", op_buffer[i]->argn);
 
@@ -233,8 +248,6 @@ static cpu_error_type print_assemble_commands(FILE* outf, CPU_OP* op_buffer[NUMB
 
     return err;
 }
-
-
 
 
 

@@ -59,9 +59,10 @@ const CPU_OP ALL_COMMANDS[50] {                                 //!ORDER IS IMPO
     {"in",              IN,             1,      {},     {},     {}      },
     {"out",             OUT,            0,      {},     {},     {}      },
     {"hlt",             HLT,            0,      {},     {},     {}      },
-    {"rpush",           RPUSH,          2,      {R},    {},     {}      },
-    {"rpop",            RPOP,           2,      {R},    {},     {}      },
-    {"jmp",             JMP,            0,      {},     {},     {}      }
+    {"rpush",           RPUSH,          1,      {R},    {},     {}      },
+    {"rpop",            RPOP,           1,      {R},    {},     {}      },
+    {"jmp",             JMP,            1,      {N},    {},     {}      },
+    {"adl",             LBL,            0,      {L},    {},     {}      }
 };
 
 
