@@ -5,16 +5,16 @@
 #include "stack.h"
 #include <stdlib.h>
 
-static void print_command_info(FILE* stream, int command_id) {
-    fprintf(stream, "command id: %d;\n", command_id);
-    fprintf(stream, "Name: %s; number: of args %d\n", ALL_COMMANDS[command_id].name, ALL_COMMANDS[command_id].argn);
-    if(ALL_COMMANDS[command_id].argn > 0) {
-        fprintf(stream, "Argument types: ");
-        for(int i = 0; i < ALL_COMMANDS[command_id].argn; i++) {
-            fprintf(stream, "arg type elem[%d]: %d ", i, ALL_COMMANDS[command_id].cpu_argvt[i]);
-        } fprintf(stream, "\n");
-    }
-}
+// static void print_command_info(FILE* stream, int command_id) {
+//     fprintf(stream, "command id: %d;\n", command_id);
+//     fprintf(stream, "Name: %s; number: of args %d\n", ALL_COMMANDS[command_id].name, ALL_COMMANDS[command_id].argn);
+//     if(ALL_COMMANDS[command_id].argn > 0) {
+//         fprintf(stream, "Argument types: ");
+//         for(int i = 0; i < ALL_COMMANDS[command_id].argn; i++) {
+//             fprintf(stream, "arg type elem[%d]: %d ", i, ALL_COMMANDS[command_id].cpu_argvt[i]);
+//         } fprintf(stream, "\n");
+//     }
+// }
 
 static cpu_error_type ctor_op(CPU_OP* operation) {
     operation->name = "";
@@ -132,8 +132,8 @@ static cpu_error_type read_commands(FILE* inf, const CPU_OP* operations, CPU_OP*
         op_buffer[counter]->com_id      = command_id;
         op_buffer[counter]->argn        = operations[command_id].argn;
 
-        printf("Get command %s - %d\n", command, command_id);
-        printf("command: %s\n", op_buffer[counter]->name);
+        // printf("Get command %s - %d\n", command, command_id);
+        // printf("command: %s\n", op_buffer[counter]->name);
         
         for(int i = 0; i < operations[command_id].argn; i++) {                  //GETTING ARGUMENTS
             //printf("cpu arg type - %d\n", operations[command_id].cpu_argvt[i]);
@@ -150,7 +150,7 @@ static cpu_error_type read_commands(FILE* inf, const CPU_OP* operations, CPU_OP*
     return CPU_NO_ERR;
 }
 
-static cpu_error_type print_assemble_commands(FILE* outf, CPU_OP* op_buffer[NUMBER_OF_CMD], int number_of_lines, FILE* listing) {
+static cpu_error_type print_assemble_commands(FILE* outf, CPU_OP* op_buffer[NUMBER_OF_CMD], int number_of_lines, FILE* listing, FILE* binary) {
     cpu_error_type err = CPU_NO_ERR;
 
     for(int i = 0; i < number_of_lines; i++) {
@@ -172,6 +172,21 @@ static cpu_error_type print_assemble_commands(FILE* outf, CPU_OP* op_buffer[NUMB
         }
     }
 
+    if(binary != NULL) {
+        char buf[NUMBER_OF_CMD] = {};
+        int k = 0;
+        for(int i = 0; i < number_of_lines; i++) {
+            buf[k] = op_buffer[i]->com_id;
+            k++;
+
+            for(int j = 0; j < op_buffer[i]->argn; j++) {
+                buf[k] = (char)op_buffer[i]->cpu_argv[j];
+                k++;
+            }
+        }
+        fwrite(buf, sizeof(char), k, binary);
+    }
+
     return err;
 }
 
@@ -179,7 +194,7 @@ static cpu_error_type print_assemble_commands(FILE* outf, CPU_OP* op_buffer[NUMB
 
 
 
-void assembler(FILE* inf, FILE* outf, FILE* log) {
+void assembler(FILE* inf, FILE* outf, FILE* log, FILE* binary) {
     printf("Starting assembler\n");
     int lines = 0;
 
@@ -202,7 +217,7 @@ void assembler(FILE* inf, FILE* outf, FILE* log) {
     //     printf("COMMAND[%d]\nName: %s\nId: %d\n", i, commands[i]->name, commands[i]->com_id);
     // }
 
-    print_assemble_commands(outf, commands, lines, log);
+    print_assemble_commands(outf, commands, lines, log, binary);
     free(buffer);
     printf("Assembler finished\n");
 }
@@ -213,6 +228,7 @@ int main(/*int argc, char *argv[]*/) {
     FILE* in = nullptr;
     FILE* out = nullptr;
     FILE* listing = nullptr;
+    FILE* binary = nullptr;
 
     if ((in = fopen("source.txt", "r")) == NULL) {
         printf("File reading error");
@@ -229,9 +245,14 @@ int main(/*int argc, char *argv[]*/) {
         return 1;
     }
 
-    assembler(in, out, listing);
+    if ((binary = fopen("binary.bin", "wb")) == NULL) {
+        printf("File creating error");
+        return 1;
+    }
 
+    assembler(in, out, listing, binary);
 
+    fclose(binary);
     fclose(listing);
     fclose(in);
     fclose(out);

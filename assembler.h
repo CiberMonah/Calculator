@@ -38,7 +38,7 @@ struct CPU_REG {
     cpu_registers   value               = NONE;
 };
 
-void assembler(FILE* inf, FILE* outf, FILE* log);
+void assembler(FILE* inf, FILE* outf, FILE* log, FILE* bin);
 
 
 #endif
