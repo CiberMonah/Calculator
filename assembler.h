@@ -4,7 +4,7 @@
 #include "stack.h"
 #include "calculator.h"
 
-const int MAX_ARGN          = 100;
+const int MAX_ARGN          = 3;
 const int NUMBER_OF_CMD     = 100;
 const int NUMBER_OF_LABELS  = 10;
 

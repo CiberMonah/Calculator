@@ -16,14 +16,13 @@ static void print_command_info(FILE* stream, int command_id) {
     }
 }
 
-// static cpu_error_type create_op(char* name, cpu_commands_id com_id, int argn, cpu_arguments arg_arr[], CPU_OP* operation) {
-//     operation->name = name;
-//     operation->com_id = com_id;
-//     operation->argn = argn;
-//     for(int i = 0; i < argn; i++)
-//         operation->cpu_argvt[i] = arg_arr[i];
-//     return CPU_NO_ERR;
-// }
+static cpu_error_type ctor_op(CPU_OP* operation) {
+    operation->name = "";
+    operation->com_id = WRONG_COMMAND;
+    operation->argn = 0;
+
+    return CPU_NO_ERR;
+}
 
 // static cpu_error_type create_reg(char* name, cpu_registers value, CPU_REG* reg) {
 //     reg->name   = name;
@@ -34,11 +33,13 @@ static void print_command_info(FILE* stream, int command_id) {
 
 static cpu_error_type get_arg(FILE* inf, cpu_arguments argt, cpu_registers* reg, Elem_t* argv) {
     char* str = nullptr;
-    printf("AAAAAAAa%d", argt);
+
     if(argt == N) {
         if(fscanf(inf, "%d", argv) == 0)
             return CPU_WRONG_ARGUMENT_ERR;
-    } else if(argt == R) {
+        else 
+            return CPU_NO_ERR;
+    } else if (argt == R) {
         if      (strcmp(str, "rax") == 0)
             (*reg) = RAX;
         else if (strcmp(str, "rbx") == 0)
@@ -51,9 +52,9 @@ static cpu_error_type get_arg(FILE* inf, cpu_arguments argt, cpu_registers* reg,
             return CPU_WRONG_REGISTER_ERR;
     }
     if (argt == B) {
-        printf("ZALUPA");
-        if (fscanf(inf, "%d", argv) == 1);
-        else if (fscanf(inf, "%s", str) == 1) {
+        if(fscanf(inf, "%d", argv) == 1) {
+            return CPU_NO_ERR; 
+        } else if (fscanf(inf, "%s", str) == 1) {
             if      (strcmp(str, "rax") == 0)
                 (*reg) = RAX;
             else if (strcmp(str, "rbx") == 0)
@@ -116,26 +117,30 @@ static cpu_commands_id get_command(FILE* inf, char* command, int* ptr) {
         }
 }
 
-static cpu_error_type read_commands(FILE* inf, const CPU_OP* operations, CPU_OP* op_buffer[NUMBER_OF_CMD], int* number_of_lines) {
+static cpu_error_type read_commands(FILE* inf, const CPU_OP* operations, CPU_OP** op_buffer, int* number_of_lines) {
     char command [MAX_LENGTH_OF_CMD] = "";
     int counter = 0;
     cpu_error_type err = CPU_NO_ERR;
 
     cpu_commands_id command_id = get_command(inf, command, &counter);
-    print_command_info(stdout, command_id);
-    while(command_id != HLT) {
+    printf("CHZH - %d\n", command_id);
+
+    while(command_id != WRONG_COMMAND) {
         op_buffer[counter]->name = command;
         op_buffer[counter]->com_id = command_id;
-        for(int i = 0; i < operations[command_id].argn; i++) {
+        for(int i = 0; i < operations[command_id].argn; i++) {                  //GETTING ARGUMENTS
+            //printf("cpu arg type - %d\n", operations[command_id].cpu_argvt[i]);
             err = get_arg(inf, operations[command_id].cpu_argvt[i], op_buffer[counter]->cpu_regv, &op_buffer[counter]->cpu_argv[i]);
-            printf("GET ARG\n");
+            //printf("ARGUMENT - %d\n", op_buffer[counter]->cpu_argv[i]);
+            //printf("error - %d\n", err);
         }
         if(err != CPU_NO_ERR)
             return err;
         command_id = get_command(inf, command, &counter);
+        printf("Get command %s - %d\n", command, command_id);
         counter++;
     }
-
+    printf("SEGFAULT\n");
     *number_of_lines = counter;
     return CPU_NO_ERR;
 }
@@ -167,15 +172,30 @@ static cpu_error_type print_assemble_commands(FILE* outf, CPU_OP* op_buffer[NUMB
 
 
 
+
+
 void assembler(FILE* inf, FILE* outf, FILE* log) {
     printf("Starting assembler\n");
     int lines = 0;
 
     CPU_OP* commands[NUMBER_OF_CMD] = {};
 
+    CPU_OP* buffer = (CPU_OP*)calloc(NUMBER_OF_CMD, sizeof(CPU_OP));    //create memory for commands
+
+    for(int i = 0; i < NUMBER_OF_CMD; i++) {
+        commands[i] = buffer + i;
+    }
+
+    for(int i = 0; i < NUMBER_OF_CMD; i++) {                            //Ctor of commands structs
+        ctor_op(commands[i]);
+    }
+
     read_commands(inf, ALL_COMMANDS, commands, &lines);
 
-    printf("Reading commands finished/n");
+    for(int i = 0; i < NUMBER_OF_CMD; i++) {    
+                                                                        //print buf
+        printf("COMMAND[%d]\nName: %s\nId: %d\n", i, commands[i]->name, commands[i]->com_id);
+    }
 
     print_assemble_commands(outf, commands, lines, log);
 
@@ -194,12 +214,12 @@ int main(/*int argc, char *argv[]*/) {
         return 1;
     }
 
-    if ((out = fopen("listing.txt", "w")) == NULL) {
+    if ((out = fopen("bytecode.txt", "w")) == NULL) {
         printf("File creating error");
         return 1;
     }
 
-    if ((listing = fopen("bytecode.txt", "w")) == NULL) {
+    if ((listing = fopen("listing.txt", "w")) == NULL) {
         printf("File creating error");
         return 1;
     }
