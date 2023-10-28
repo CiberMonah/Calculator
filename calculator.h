@@ -25,6 +25,8 @@ enum cpu_error_type {
     CPU_WRONG_COMMAND_ERR       = 1 << 2,
     CPU_WRONG_ARGUMENT_ERR      = 1 << 3,
     CPU_WRONG_REGISTER_ERR      = 1 << 4,
+    CPU_MEM_ALLOC_ERR           = 1 << 5,
+    CPU_VOID_POINTER_ERR        = 1 << 6,
 };
 
 void dump_processor(CPU* cpu) ;

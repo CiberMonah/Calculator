@@ -14,7 +14,7 @@ enum cpu_arguments {
 
     N               = 1,
     R               = 1 << 1,
-    B               = N | R,
+    // B               = N | R,
     L               = 1 << 2,
 };
 

@@ -28,9 +28,20 @@ static cpu_error_type ctor_op(CPU_OP* operation) {
     return CPU_NO_ERR;
 }
 
-//static cpu_error_type as_verificator () {}                                                        ///
 
-//dtor                                                                                              ///
+static cpu_error_type dtor_op(CPU_OP* operation) {
+    operation->com_id = WRONG_COMMAND;
+    operation->argn = -1;
+
+    for(int i = 0; i < MAX_ARGN; i++) {
+        operation->cpu_argv[i] = POISON_VALUE;
+    }
+
+    return CPU_NO_ERR;
+}
+
+//static cpu_error_type as_verificator () {}                                                        ///                                                                                               ///
+                                                                                                     ///
 
 // static cpu_error_type create_reg(char* name, cpu_registers value, CPU_REG* reg) {
 //     reg->name   = name;
@@ -41,13 +52,16 @@ static cpu_error_type ctor_op(CPU_OP* operation) {
 
 static cpu_error_type get_arg(FILE* inf, cpu_arguments argt, cpu_registers* reg, Elem_t* argv) {
     char* str = (char*)calloc(3, sizeof(char));
+    if(str == nullptr)
+        return CPU_MEM_ALLOC_ERR;
 
-    if(argt == N) {
+    if(argt & ARGT_NUM) {
         if(fscanf(inf, "%d", argv) == 0)
             return CPU_WRONG_ARGUMENT_ERR;
         else 
             return CPU_NO_ERR;
-    } else if (argt == R) {
+    }
+    if (argt & R) {
         fscanf(inf, "%s", str);
         if      (strcmp(str, "rax") == 0)
             (*reg) = RAX;
@@ -60,6 +74,7 @@ static cpu_error_type get_arg(FILE* inf, cpu_arguments argt, cpu_registers* reg,
         else 
             return CPU_WRONG_REGISTER_ERR;
     }
+/*
     if (argt == B) {
         if(fscanf(inf, "%d", argv) == 1) {
             return CPU_NO_ERR;
@@ -67,26 +82,36 @@ static cpu_error_type get_arg(FILE* inf, cpu_arguments argt, cpu_registers* reg,
             fscanf(inf, "%s", str);
             if      (strcmp(str, "rax") == 0) {
                 (*reg) = RAX;
+                free(str);
                 return CPU_NO_ERR;
             } else if (strcmp(str, "rbx") == 0) {
                 (*reg) = RBX;
+                free(str);
                 return CPU_NO_ERR;
             } else if (strcmp(str, "rcx") == 0) {
                 (*reg) = RCX;
+                free(str);
                 return CPU_NO_ERR;
             } else if (strcmp(str, "rdx") == 0) {
                 (*reg) = RDX;
+                free(str);
                 return CPU_NO_ERR;
             } else {
+                free(str);
                 return CPU_WRONG_REGISTER_ERR;
             }
+        free(str);
         return CPU_WRONG_ARGUMENT_ERR;
         }
+*/
     } else if(argt == L) {
         fscanf(inf, "%d", argv);
     }
+    free(str);
     return CPU_NO_ERR;
 }
+
+// Premature optimization is the root of all evil (c)
 
 static int get_label(char* str, int ptr) {                          //6Lya IsPrAvb PZ
     if(str[0] == ':')  {
@@ -101,12 +126,14 @@ static int get_label(char* str, int ptr) {                          //6Lya IsPrA
 
 static cpu_commands_id get_command(FILE* inf, char** command, int* ptr) {
     *command = (char*)calloc(MAX_LENGTH_OF_CMD, sizeof(char));        //ALLOC memory for new pointer to name
+    ????
 
     if(fscanf(inf, "%s", *command) == EOF)
         return WRONG_COMMAND;
     if (get_label(*command, *ptr) == 1) {
         return LBL;
     }
+    strncmp( command, "push", strlen("push"))
     if(strcmp(*command, "in") == 0) {
         return IN;
     } else if(strcmp(*command, "push") == 0) {
@@ -137,8 +164,19 @@ static cpu_commands_id get_command(FILE* inf, char** command, int* ptr) {
         return RPOP;
     } else if(strcmp(*command, "jmp") == 0) {
         return JMP;
-    }else {
+    } else {
         return WRONG_COMMAND;
+    }
+    free(command);
+}
+
+read_commands()
+{
+    while (!end)
+    {
+        cmd_t cmd = get_command(buffer);
+
+        fprintf( listing, "%d: %s, %s", ip, buffer, cmd);
     }
 }
 
@@ -213,11 +251,11 @@ static cpu_error_type print_assemble_commands(FILE* outf, CPU_OP* op_buffer[NUMB
             if(op_buffer[i]->argn > 0) {
                 if(op_buffer[i]->cpu_argv[0] != POISON_VALUE) {                     //ЕСЛИ АРГУМЕНТ ЧИСЛО ТО ВЫВОДИ ЧИСЛА
                     for(int j = 0; j < op_buffer[i]->argn; j++)
-                        fprintf(listing, "INT ARGUMENT[%i] %d", j, op_buffer[i]->cpu_argv[j]);
+                        fprintf(listing, "INT ARGUMENT[%i] %d;", j, op_buffer[i]->cpu_argv[j]);
                     fprintf(listing, "\n");
                 } else {
                     for(int j = 0; j < op_buffer[i]->argn; j++)                     //ЕСЛИ АРГУМЕНТ РЕГСИТЕР ТО ВЫВОДИ РЕГИСТРЫ
-                        fprintf(listing, "REG ARGUMENT[%i] %d", j, op_buffer[i]->cpu_regv[j]);
+                        fprintf(listing, "REG ARGUMENT[%i] %d;", j, op_buffer[i]->cpu_regv[j]);
                     fprintf(listing, "\n");
                 }
             }
@@ -255,9 +293,12 @@ void assembler(FILE* inf, FILE* outf, FILE* log, FILE* binary) {
     printf("Starting assembler\n");
     int lines = 0;
 
+    // If number of commands is not fixed, use calloc only.
+    // If number is fixed, use static buffer and check if real number of commands in file is less than size of buffer.
     CPU_OP* commands[NUMBER_OF_CMD] = {};
 
     CPU_OP* buffer = (CPU_OP*)calloc(NUMBER_OF_CMD, sizeof(CPU_OP));    //create memory for commands
+    ????
 
     for(int i = 0; i < NUMBER_OF_CMD; i++) {
         commands[i] = buffer + i;
@@ -275,7 +316,9 @@ void assembler(FILE* inf, FILE* outf, FILE* log, FILE* binary) {
     // }
 
     print_assemble_commands(outf, commands, lines, log, binary);
+
     free(buffer);
+
     printf("Assembler finished\n");
 }
 

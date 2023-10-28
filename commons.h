@@ -39,6 +39,7 @@ struct CPU_OP {
     cpu_commands_id com_id                          = WRONG_COMMAND;
     int             argn                            = 0;
 
+    // value_type <-> signature
     cpu_arguments   cpu_argvt[MAX_ARGN]             = {};
     Elem_t          cpu_argv [MAX_ARGN]             = {};
     cpu_registers   cpu_regv [MAX_ARGN]             = {};
