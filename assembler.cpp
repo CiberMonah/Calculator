@@ -89,7 +89,17 @@ static cpu_error_type get_arg(FILE* inf, cpu_arguments argt, cpu_registers* reg,
     return CPU_NO_ERR;
 }
 
-// Premature optimization is the root of all evil (c
+// Premature optimization is the root of all evil (c)
+
+static int get_comment(char* str, FILE* source) {
+    if(str[0] == '#'){
+        char comment[100] = "";
+        fgets(comment, 100, source);
+        return 1;
+    }
+    else    
+        return 0;
+}
 
 
 int ptr_lbl = 0;
@@ -192,6 +202,9 @@ static cpu_error_type read_commands(FILE* inf, const CPU_OP* operations, CPU_OP*
     cpu_error_type err = CPU_NO_ERR;
     cpu_commands_id command_id = get_command(inf, &command);
 
+    if(get_comment(command, inf) == 1) 
+        command_id = LBL;           //ignore this string
+
     while(command_id != WRONG_COMMAND) {
         op_buffer[counter]->name        = command;
         op_buffer[counter]->com_id      = command_id;
@@ -205,8 +218,6 @@ static cpu_error_type read_commands(FILE* inf, const CPU_OP* operations, CPU_OP*
         if(command_id == LBL) 
             counter--;
 
-        
-        
         if(operations[command_id].cpu_argvt[0] == L) {
             for(int i = 0; i < NUMBER_OF_LABELS; i++) {
                 // printf("%s - %s\n", LABELS[i].name, lbl);
@@ -226,7 +237,11 @@ static cpu_error_type read_commands(FILE* inf, const CPU_OP* operations, CPU_OP*
         
 
         counter++;
+
         command_id = get_command(inf, &command);
+
+        if(get_comment(command, inf) == 1) 
+            command_id = LBL;
     } 
     *number_of_lines = counter;
     return CPU_NO_ERR;
