@@ -31,6 +31,8 @@ enum cpu_commands_id {
     RPUSH           = 14,
     JMP             = 15,
     LBL             = 16,
+    CALL            = 17,
+    RET             = 18,
 };
 
 struct CPU_OP {
@@ -62,8 +64,10 @@ const CPU_OP ALL_COMMANDS[50] {                                 //!ORDER IS IMPO
     {"hlt",             HLT,            0,      {},     {},     {}      },
     {"rpush",           RPUSH,          1,      {R},    {},     {}      },
     {"rpop",            RPOP,           1,      {R},    {},     {}      },
-    {"jmp",             JMP,            1,      {N},    {},     {}      },
-    {"adl",             LBL,            0,      {L},    {},     {}      }
+    {"jmp",             JMP,            1,      {L},    {},     {}      },
+    {"adl",             LBL,            0,      {},     {},     {}      },
+    {"call",            CALL,           1,      {L},    {},     {}      },
+    {"ret",             RET,            0,      {},     {},     {}      }
 };
 
 

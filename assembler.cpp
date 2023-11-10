@@ -95,6 +95,14 @@ static cpu_error_type get_arg(FILE* inf, cpu_arguments argt, cpu_registers* reg,
 int ptr_lbl = 0;
 
 static int get_label(char* str, int ptr) {
+    int k = 0;
+
+    if(ptr == -1) {         //to detect labels in reading comands
+        while(str[k] != ':' && str[k] != '\n' && str[k] != '\0') k++;                     
+        if(str[k] == ':') return 1;
+        else return 0;
+    }
+
     int i = 0;
     if(str[0] == '\n') return 1;
     while(str[i] != ':' && str[i] != '\n' && str[i] != '\0') i++;                     
@@ -104,7 +112,7 @@ static int get_label(char* str, int ptr) {
             j++;
         str[j] = '\0';
 
-        printf("%s\n", str);
+        // printf("%s\n", str);
 
         LABELS[ptr_lbl].name = strdup(str + 1 + i);        
 
@@ -164,6 +172,12 @@ static cpu_commands_id get_command(FILE* inf, char** command) {
         return RPOP;
     } else if(strcmp(*command, "jmp") == 0) {
         return JMP;
+    } else if (get_label(*command, -1) == 1) {
+        return LBL;
+    } else if (strcmp(*command, "call") == 0) {
+        return CALL;
+    } else if (strcmp(*command, "ret") == 0) {
+        return RET;
     } else {
         return WRONG_COMMAND;
     }
@@ -178,15 +192,12 @@ static cpu_error_type read_commands(FILE* inf, const CPU_OP* operations, CPU_OP*
     cpu_error_type err = CPU_NO_ERR;
     cpu_commands_id command_id = get_command(inf, &command);
 
-
     while(command_id != WRONG_COMMAND) {
         op_buffer[counter]->name        = command;
         op_buffer[counter]->com_id      = command_id;
         op_buffer[counter]->argn        = operations[command_id].argn;
-
-        printf("Get command %s - %d\n", command, command_id);
-        printf("command: %s\n", op_buffer[counter]->name);
         
+
         for(int i = 0; i < operations[command_id].argn; i++) { 
             err = get_arg(inf, operations[command_id].cpu_argvt[i], op_buffer[counter]->cpu_regv, &op_buffer[counter]->cpu_argv[i], lbl);
         }
@@ -194,8 +205,16 @@ static cpu_error_type read_commands(FILE* inf, const CPU_OP* operations, CPU_OP*
         if(command_id == LBL) 
             counter--;
 
-        if(command_id == JMP) {
-            //
+        
+        
+        if(operations[command_id].cpu_argvt[0] == L) {
+            for(int i = 0; i < NUMBER_OF_LABELS; i++) {
+                // printf("%s - %s\n", LABELS[i].name, lbl);
+                if(strcmp(LABELS[i].name, lbl) == 0) {
+                    op_buffer[counter]->cpu_argv[0] = LABELS[i].ptr;
+                    break;
+                }
+            }
         }
 
         if(op_buffer[counter]->cpu_argv[0] == POISON_VALUE && op_buffer[counter]->argn > 0 ) {
