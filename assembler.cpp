@@ -125,16 +125,15 @@ static void get_all_labels(FILE* source_file) {
         if(get_label(str, ptr) == 1) ptr--;
         ptr++;
     }
+
+    rewind(source_file);
 }
 
-static cpu_commands_id get_command(FILE* inf, char** command, int* ptr) {
+static cpu_commands_id get_command(FILE* inf, char** command) {
     *command = (char*)calloc(MAX_LENGTH_OF_CMD, sizeof(char));        //ALLOC memory for new pointer to name
 
     if(fscanf(inf, "%s", *command) == EOF)
         return WRONG_COMMAND;
-    if (get_label(*command, *ptr) == 1) {
-        return LBL;
-    }
     if(strcmp(*command, "in") == 0) {
         return IN;
     } else if(strcmp(*command, "push") == 0) {
@@ -177,7 +176,7 @@ static cpu_error_type read_commands(FILE* inf, const CPU_OP* operations, CPU_OP*
     char lbl[100] = "";
 
     cpu_error_type err = CPU_NO_ERR;
-    cpu_commands_id command_id = get_command(inf, &command, &counter);
+    cpu_commands_id command_id = get_command(inf, &command);
 
 
     while(command_id != WRONG_COMMAND) {
@@ -208,7 +207,7 @@ static cpu_error_type read_commands(FILE* inf, const CPU_OP* operations, CPU_OP*
         
 
         counter++;
-        command_id = get_command(inf, &command, &counter);
+        command_id = get_command(inf, &command);
     } 
     *number_of_lines = counter;
     return CPU_NO_ERR;
