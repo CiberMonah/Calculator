@@ -5,16 +5,6 @@
 #include "stack.h"
 #include <stdlib.h>
 
-// static void print_command_info(FILE* stream, int command_id) {
-//     fprintf(stream, "command id: %d;\n", command_id);
-//     fprintf(stream, "Name: %s; number: of args %d\n", ALL_COMMANDS[command_id].name, ALL_COMMANDS[command_id].argn);
-//     if(ALL_COMMANDS[command_id].argn > 0) {
-//         fprintf(stream, "Argument types: ");
-//         for(int i = 0; i < ALL_COMMANDS[command_id].argn; i++) {
-//             fprintf(stream, "arg type elem[%d]: %d ", i, ALL_COMMANDS[command_id].cpu_argvt[i]);
-//         } fprintf(stream, "\n");
-//     }
-// }
 
 static cpu_error_type ctor_op(CPU_OP* operation) {
     operation->name = "";
@@ -40,28 +30,18 @@ static cpu_error_type dtor_op(CPU_OP* operation) {
     return CPU_NO_ERR;
 }
 
-//static cpu_error_type as_verificator () {}                                                        ///                                                                                               ///
-                                                                                                     ///
-
-// static cpu_error_type create_reg(char* name, cpu_registers value, CPU_REG* reg) {
-//     reg->name   = name;
-//     reg->value  = value;
-
-//     return CPU_NO_ERR;
-// }
-
-static cpu_error_type get_arg(FILE* inf, cpu_arguments argt, cpu_registers* reg, Elem_t* argv) {
+static cpu_error_type get_arg(FILE* inf, cpu_arguments argt, cpu_registers* reg, Elem_t* argv, char* lbl) {
     char* str = (char*)calloc(3, sizeof(char));
     if(str == nullptr)
         return CPU_MEM_ALLOC_ERR;
 
-    if(argt & ARGT_NUM) {
+    if(argt == N) {
         if(fscanf(inf, "%d", argv) == 0)
             return CPU_WRONG_ARGUMENT_ERR;
         else 
             return CPU_NO_ERR;
     }
-    if (argt & R) {
+    if (argt == R) {
         fscanf(inf, "%s", str);
         if      (strcmp(str, "rax") == 0)
             (*reg) = RAX;
@@ -74,7 +54,6 @@ static cpu_error_type get_arg(FILE* inf, cpu_arguments argt, cpu_registers* reg,
         else 
             return CPU_WRONG_REGISTER_ERR;
     }
-/*
     if (argt == B) {
         if(fscanf(inf, "%d", argv) == 1) {
             return CPU_NO_ERR;
@@ -103,37 +82,59 @@ static cpu_error_type get_arg(FILE* inf, cpu_arguments argt, cpu_registers* reg,
         free(str);
         return CPU_WRONG_ARGUMENT_ERR;
         }
-*/
     } else if(argt == L) {
-        fscanf(inf, "%d", argv);
+        fscanf(inf, "%s", lbl);
     }
     free(str);
     return CPU_NO_ERR;
 }
 
-// Premature optimization is the root of all evil (c)
+// Premature optimization is the root of all evil (c
 
-static int get_label(char* str, int ptr) {                          //6Lya IsPrAvb PZ
-    if(str[0] == ':')  {
-        LABELS[str[1] - '0'].name   = str[1] - '0' + 1;                 //DA-DA imya labela est ego nomer poka chto
 
-        LABELS[str[1] - '0'].ptr    = ptr;                          //Kladem v ukazatel lablenomer kuda hotim tepnutsa
+int ptr_lbl = 0;
+
+static int get_label(char* str, int ptr) {
+    int i = 0;
+    if(str[0] == '\n') return 1;
+    while(str[i] != ':' && str[i] != '\n' && str[i] != '\0') i++;                     
+    if(str[i] == ':')  {
+        int j = i;
+        while(str[j] != '\n' && str[j] != '\0')
+            j++;
+        str[j] = '\0';
+
+        printf("%s\n", str);
+
+        LABELS[ptr_lbl].name = strdup(str + 1 + i);        
+
+        LABELS[ptr_lbl].ptr  = ptr;      
+
+        ptr_lbl++;
+
         return 1;
     }
-
     return -1;
+}
+
+static void get_all_labels(FILE* source_file) {
+    char str[100] = "";
+    int ptr = 0;
+
+    while(fgets(str, 100, source_file) != NULL) {
+        if(get_label(str, ptr) == 1) ptr--;
+        ptr++;
+    }
 }
 
 static cpu_commands_id get_command(FILE* inf, char** command, int* ptr) {
     *command = (char*)calloc(MAX_LENGTH_OF_CMD, sizeof(char));        //ALLOC memory for new pointer to name
-    ????
 
     if(fscanf(inf, "%s", *command) == EOF)
         return WRONG_COMMAND;
     if (get_label(*command, *ptr) == 1) {
         return LBL;
     }
-    strncmp( command, "push", strlen("push"))
     if(strcmp(*command, "in") == 0) {
         return IN;
     } else if(strcmp(*command, "push") == 0) {
@@ -170,19 +171,10 @@ static cpu_commands_id get_command(FILE* inf, char** command, int* ptr) {
     free(command);
 }
 
-read_commands()
-{
-    while (!end)
-    {
-        cmd_t cmd = get_command(buffer);
-
-        fprintf( listing, "%d: %s, %s", ip, buffer, cmd);
-    }
-}
-
 static cpu_error_type read_commands(FILE* inf, const CPU_OP* operations, CPU_OP** op_buffer, int* number_of_lines) {
     int counter = 0;
     char* command = nullptr;
+    char lbl[100] = "";
 
     cpu_error_type err = CPU_NO_ERR;
     cpu_commands_id command_id = get_command(inf, &command, &counter);
@@ -196,17 +188,15 @@ static cpu_error_type read_commands(FILE* inf, const CPU_OP* operations, CPU_OP*
         printf("Get command %s - %d\n", command, command_id);
         printf("command: %s\n", op_buffer[counter]->name);
         
-        for(int i = 0; i < operations[command_id].argn; i++) {                  //GETTING ARGUMENTS
-            //printf("cpu arg type - %d\n", operations[command_id].cpu_argvt[i]);
-            err = get_arg(inf, operations[command_id].cpu_argvt[i], op_buffer[counter]->cpu_regv, &op_buffer[counter]->cpu_argv[i]);
-            //printf("ARGUMENT - %d\n", op_buffer[counter]->cpu_argv[i]);
+        for(int i = 0; i < operations[command_id].argn; i++) { 
+            err = get_arg(inf, operations[command_id].cpu_argvt[i], op_buffer[counter]->cpu_regv, &op_buffer[counter]->cpu_argv[i], lbl);
         }
 
         if(command_id == LBL) 
             counter--;
 
         if(command_id == JMP) {
-            op_buffer[counter]->cpu_argv[0] = LABELS[op_buffer[counter]->cpu_argv[0]].ptr;
+            //
         }
 
         if(op_buffer[counter]->cpu_argv[0] == POISON_VALUE && op_buffer[counter]->argn > 0 ) {
@@ -298,7 +288,6 @@ void assembler(FILE* inf, FILE* outf, FILE* log, FILE* binary) {
     CPU_OP* commands[NUMBER_OF_CMD] = {};
 
     CPU_OP* buffer = (CPU_OP*)calloc(NUMBER_OF_CMD, sizeof(CPU_OP));    //create memory for commands
-    ????
 
     for(int i = 0; i < NUMBER_OF_CMD; i++) {
         commands[i] = buffer + i;
@@ -334,6 +323,12 @@ int main(/*int argc, char *argv[]*/) {
         printf("File reading error");
         return 1;
     }
+
+    get_all_labels(in);
+
+    // for(int i = 0; i < NUMBER_OF_LABELS; i++) {
+    //     printf("NAME: %s PTR: %d\n", LABELS[i].name, LABELS[i].ptr);
+    // }
 
     if ((out = fopen("bytecode.txt", "w")) == NULL) {
         printf("File creating error");

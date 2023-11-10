@@ -14,7 +14,7 @@ enum cpu_arguments {
 
     N               = 1,
     R               = 1 << 1,
-    // B               = N | R,
+    B               = N | R,
     L               = 1 << 2,
 };
 
@@ -33,7 +33,7 @@ struct CPU_REG {
 };
 
 struct LABEL {
-    int name                = 0;
+    char* name              = 0;
     int ptr                 = -1;
 };
 
