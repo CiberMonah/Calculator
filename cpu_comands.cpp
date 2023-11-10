@@ -1,101 +1,103 @@
-#include "calculator.h"
+#include "cpu_comands.h"
 #include "stack.h"
 #include <math.h>
 
-void command_push(Stack* stk, Elem_t number) {
-    stack_push(stk, number);
+void comand_push(CPU* cpu) {
+    cpu->car ++;
+    char number = cpu->comand_buffer[cpu->car];
+    stack_push(&cpu->stk, (int)number);
 }
 
-void command_pop(Stack* stk, Elem_t* number) {
-    stack_pop(stk, number);
+void comand_pop(CPU* cpu) {
+    int number = 0;
+    stack_pop(&cpu->stk, &number);
 }
 
-void command_add(Stack* stk) {
-    Elem_t res = 0, number = 0;
-    command_pop(stk, &number);
+void comand_add(CPU* cpu) {
+    int res = 0;
+    int number = 0;
+    stack_pop(&cpu->stk, &number);
     res += number;
-    command_pop(stk, &number);
+    stack_pop(&cpu->stk, &number);
     res += number;
-    command_push(stk, res);
+    stack_push(&cpu->stk, res);
 }
 
-void command_sup(Stack* stk) {
-    Elem_t res = 0, number = 0;
-    command_pop(stk, &number);
-    res += number;
-    command_pop(stk, &number);
+void comand_sup(CPU* cpu) {
+    int res = 0;
+    int number = 0;
+    stack_pop(&cpu->stk, &number);
+    res = number;
+    stack_pop(&cpu->stk, &number);
     res -= number;
-    command_push(stk, res);
+    stack_push(&cpu->stk, res);
 }
 
-void command_mul(Stack* stk) {
-    Elem_t res = 0, number = 0;
-    command_pop(stk, &number);
+void comand_mul(CPU* cpu) {
+    int res = 0;
+    int number = 0;
+    stack_pop(&cpu->stk, &number);
     res = number;
-    command_pop(stk, &number);
+    stack_pop(&cpu->stk, &number);
     res *= number;
-    command_push(stk, res);
+    stack_push(&cpu->stk, res);
 }
 
-void command_div(Stack* stk) {
-    Elem_t res = 0, number = 0;
-    command_pop(stk, &number);
+void comand_div(CPU* cpu) {
+    int res = 0;
+    int number = 0;
+    stack_pop(&cpu->stk, &number);
     res = number;
-    command_pop(stk, &number);
-    if(number == 0) return;
-    res = (int)(((double)number / (double)res));
-    command_push(stk, res);
+    stack_pop(&cpu->stk, &number);
+    res /= number;
+    stack_push(&cpu->stk, res);
 }
 
-void command_cos(Stack* stk) {
+void comand_cos(CPU* cpu) {
     Elem_t res = 0, number = 0;
-    command_pop(stk, &number);
+    comand_pop(stk, &number);
     res = (int)(cos(double(number)));
-    command_push(stk, res);
+    comand_push(stk, res);
 }
 
-void command_sin(Stack* stk) {
+void comand_sin(CPU* cpu) {
     Elem_t res = 0, number = 0;
-    command_pop(stk, &number);
+    comand_pop(stk, &number);
     res = (int)(sin(double(number)));
-    command_push(stk, res);
+    comand_push(stk, res);
 }
 
-void command_sqrt(Stack* stk) {
+void comand_sqrt(CPU* cpu) {
     Elem_t res = 0, number = 0;
-    command_pop(stk, &number);
+    comand_pop(stk, &number);
     res = (int)(sqrt((double)number));
-    command_push(stk, (Elem_t) res);
+    comand_push(stk, (Elem_t) res);
 }
 
-// void command_rpush(Processor* proc){
-//     Elem_t number = 0;
-//     command_pop(proc->stk, &number);
-//     proc->rax
-    
-// }
+void comand_rpush(CPU* cpu) {
+    Elem_t number = 0;
+    comand_pop(proc->stk, &number);
+    proc->rax
+}
 
-// void command_rpop(Processor* proc){
-//     Elem_t number = 0;
-//     command_pop(proc->stk, &number);
-//     command_push(proc->stk, number);
-//     proc->rax
-    
-// }
+void comand_rpop(CPU* cpu) {
+    Elem_t number = 0;
+    comand_pop(proc->stk, &number);
+    comand_push(proc->stk, number);
+    proc->rax
+}
 
 
-
-
-void command_in(Stack* stk) {
+void comand_in(CPU* cpu) {
     printf("Input number - \n");
     Elem_t number = 0;
     scanf("%d", &number);
-    command_push(stk, number);
+    comand_push(stk, number);
 }
 
-void command_out(Stack* stk) {
+void comand_out(CPU* cpu) {
     Elem_t number = 0;
-    command_pop(stk, &number);
+    comand_pop(stk, &number);
     printf("%d", number);
 }
 

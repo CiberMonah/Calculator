@@ -5,9 +5,6 @@
 #include <stdlib.h>
 #include "assembler.h"
 
-const int VERSION = 1;
-char SIGNATURE[] = "CM";
-
 
 const int MAX_LENGTH_OF_CMD = 5;
 

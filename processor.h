@@ -1,21 +1,21 @@
 #ifndef PROCESSOR_H_INCLUDED
 #define PROCESSOR_H_INCLUDED
 #include "stack.h"
-#include "assembler.h"
-#include "commons.h"
 
-#define PRC_DUMP(prc) ({                                                 \
-    dump_processor((prc), __FILE__, __PRETTY_FUNCTION__, __LINE__);      \
+#define CPU_DUMP(cpu, f) ({                                                   \
+    dump_processor((cpu), (f), __FILE__, __PRETTY_FUNCTION__, __LINE__);      \
     })
 
 struct CPU {
-    int RAX = 0;
-    int RBX = 0;
-    int RCX = 0;
-    int RDX = 0;
-    int* CS = NULL;
+    int rax = 0;
+    int rbx = 0;
+    int rcx = 0;
+    int rdx = 0;
+    int com_buffer_size = 0;
+    char* comand_buffer = nullptr;
+    int* memory = nullptr;
     int car;
-    Stack* stk;
+    Stack stk = {};
 };
 
 enum cpu_error_type {
@@ -29,18 +29,10 @@ enum cpu_error_type {
     CPU_VOID_POINTER_ERR        = 1 << 6,
 };
 
-void dump_processor(CPU* cpu) ;
-void command_add(Stack* stk);
-void command_out(Stack* stk);
-void command_mul(Stack* stk);
-void command_div(Stack* stk);
-void command_sin(Stack* stk);
-void command_cos(Stack* stk);
-void command_sup(Stack* stk);
-void command_sqrt(Stack* stk);
-void command_in(Stack* stk);
-int  get_command(FILE* fp, int* command);
-void command_pop(Stack* stk, Elem_t* number);
-void command_push(Stack* stk, Elem_t number);
+void dump_processor(CPU* cpu, FILE* dump_file, const char* file, const char* func, const int line);
+void cpu_init(CPU* cpu);
+void cpu_dtor(CPU* cpu);
+int read_comands(CPU* cpu, const char * FileName);
+
 
 #endif

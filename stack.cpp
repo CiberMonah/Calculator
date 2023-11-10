@@ -240,12 +240,12 @@ stack_error_type stack_dump(Stack* stk, bool only_data, const char* file, const 
     assert(0 && "fallthrough");
 }
 
-stack_error_type print_stack(Stack* stk) {
+stack_error_type print_stack(Stack* stk, FILE* fp) {
     for(int i = 0; i < stk->capacity; i++) {
         if(stk->data[i] == VOID_ELEM)
-            printf("[%d] = (void)\n", i);
+            fprintf(fp, "[%d] = (void)\n", i);
         else
-            printf("[%d] = %d\n", i, stk->data[i]);
+            fprintf(fp, "[%d] = %d\n", i, stk->data[i]);
     }
     return STACK_NO_ERR;
 }

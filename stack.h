@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 #define STK_DUMP(stk) ({                                                \
-    stack_dump((stk), 0, __FILE__, __PRETTY_FUNCTION__, __LINE__);         \
+    stack_dump((stk), 0, __FILE__, __PRETTY_FUNCTION__, __LINE__);      \
     })
 
 #define STK_CTOR(stk) ({                                                \
@@ -62,7 +62,7 @@ stack_error_type print_error(stack_error_type error);
 stack_error_type stack_push(Stack* stk, Elem_t value);
 stack_error_type put_error(Stack* stk, stack_error_type error);
 long hasher (Stack* stk);
-stack_error_type print_stack(Stack* stk);
+stack_error_type print_stack(Stack* stk, FILE* fp);
 bool check_error (Stack* stk);
 int stack_verificator(Stack* stk);
 
