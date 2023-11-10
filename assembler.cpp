@@ -266,22 +266,22 @@ static cpu_error_type print_assemble_commands(FILE* outf, CPU_OP* op_buffer[NUMB
     }
 
     if(listing != NULL) {
+        fprintf(listing,     "|    id    |       name       |        code        |  arguments  |\n");
         for(int i = 0; i < number_of_lines; i++) {
-            fprintf(listing, "command: %s was assembled to code : %d; pointer : %d\n", op_buffer[i]->name, op_buffer[i]->com_id, i);
+            fprintf(listing, "    %*d      %*s                 %*d               ", 3 ,i, 10, op_buffer[i]->name, 3, op_buffer[i]->com_id);
             
-            fprintf(listing, "number of arguments: %d;\n", op_buffer[i]->argn);
 
             if(op_buffer[i]->argn > 0) {
                 if(op_buffer[i]->cpu_argv[0] != POISON_VALUE) {                     //ЕСЛИ АРГУМЕНТ ЧИСЛО ТО ВЫВОДИ ЧИСЛА
                     for(int j = 0; j < op_buffer[i]->argn; j++)
-                        fprintf(listing, "INT ARGUMENT[%i] %d;", j, op_buffer[i]->cpu_argv[j]);
-                    fprintf(listing, "\n");
+                        fprintf(listing, "%d ", op_buffer[i]->cpu_argv[j]);
+                    
                 } else {
                     for(int j = 0; j < op_buffer[i]->argn; j++)                     //ЕСЛИ АРГУМЕНТ РЕГСИТЕР ТО ВЫВОДИ РЕГИСТРЫ
-                        fprintf(listing, "REG ARGUMENT[%i] %d;", j, op_buffer[i]->cpu_regv[j]);
-                    fprintf(listing, "\n");
+                        fprintf(listing, "%d ", op_buffer[i]->cpu_regv[j]);
                 }
             }
+            fprintf(listing, "\n");
         }
     }
 

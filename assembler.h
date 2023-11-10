@@ -2,7 +2,7 @@
 #define ASSEMBLER_H_INCLUDED
 #include "commons.h"
 #include "stack.h"
-#include "calculator.h"
+#include "processor.h"
 
 const int MAX_ARGN          = 3;
 const int NUMBER_OF_CMD     = 100;

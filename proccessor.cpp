@@ -1,6 +1,8 @@
 #include "commons.h"
+#include "processor.h"
 #include <stdlib.h>
 #include <stdio.h>
+
 
 
 
@@ -11,6 +13,10 @@ int main () {
         printf("File creating error");
         return 1;
     }
+
+    //init
+    //do commands
+    //delete
 
 
 
