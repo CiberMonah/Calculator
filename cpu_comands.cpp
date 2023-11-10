@@ -1,7 +1,7 @@
-#include "cpu_comands.h"
-#include "commons.h"
 #include "stack.h"
 #include <math.h>
+#include "cpu_comands.h"
+#include "commons.h"
 
 void comand_push(CPU* cpu) {
     cpu->car ++;
@@ -58,7 +58,7 @@ void comand_cos(CPU* cpu) {
     int res = 0;
     int number = 0;
     stack_pop(&cpu->stk, &number);
-    res = cos((double)number);
+    res = (int)cos((double)number);
     stack_push(&cpu->stk, res);
 }
 
@@ -66,7 +66,7 @@ void comand_sin(CPU* cpu) {
     int res = 0;
     int number = 0;
     stack_pop(&cpu->stk, &number);
-    res = sin((double)number);
+    res = (int)sin((double)number);
     stack_push(&cpu->stk, res);
 }
 
@@ -74,7 +74,7 @@ void comand_sqrt(CPU* cpu) {
     int res = 0;
     int number = 0;
     stack_pop(&cpu->stk, &number);
-    res = sqrt((double)number);
+    res = (int)sqrt((double)number);
     stack_push(&cpu->stk, res);
 }
 

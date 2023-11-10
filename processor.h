@@ -33,6 +33,7 @@ void dump_processor(CPU* cpu, FILE* dump_file, const char* file, const char* fun
 void cpu_init(CPU* cpu);
 void cpu_dtor(CPU* cpu);
 int read_comands(CPU* cpu, const char * FileName);
+void do_comands(CPU* cpu);
 
 
 #endif

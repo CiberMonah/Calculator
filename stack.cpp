@@ -179,6 +179,7 @@ stack_error_type stack_pop(Stack* stk, Elem_t* poped) {
     }
 
     assert(0 && "fallthrough");
+    return STACK_VERIFICATION_ERR;
 }
 
 static stack_error_type error_show(Stack* stk) {
@@ -250,28 +251,28 @@ stack_error_type print_stack(Stack* stk, FILE* fp) {
     return STACK_NO_ERR;
 }
 
-static stack_error_type print_error(FILE* dumpfile, stack_error_type error) {
-    if(error == STACK_MEM_ALLOC_ERR) {
-        fprintf(dumpfile, "Memory allocation error\n");
-        return error;
-    } else if(error == STACK_NULL_PTR_ERR) {
-        fprintf(dumpfile, "Pointer is Null\n");
-        return error;
-    } else if(error == STACK_OUT_OF_INDEX_ERR) {
-        fprintf(dumpfile, "Index is out of range\n");
-        return error;
-    } else if(error == STACK_IS_NOT_EXIST) {
-        fprintf(dumpfile, "Stack is not exist\n");
-        return error;
-    } else if(error == STACK_HASH_ERR) {
-        fprintf(dumpfile, "Hash error\n");
-        return error;
-    } else if(error == STACK_NO_VOID_ELEM_ERR) {
-        fprintf(dumpfile, "Not all void elems have NO_ELEM value\n");
-    }
+// static stack_error_type print_error(FILE* dumpfile, stack_error_type error) {
+//     if(error == STACK_MEM_ALLOC_ERR) {
+//         fprintf(dumpfile, "Memory allocation error\n");
+//         return error;
+//     } else if(error == STACK_NULL_PTR_ERR) {
+//         fprintf(dumpfile, "Pointer is Null\n");
+//         return error;
+//     } else if(error == STACK_OUT_OF_INDEX_ERR) {
+//         fprintf(dumpfile, "Index is out of range\n");
+//         return error;
+//     } else if(error == STACK_IS_NOT_EXIST) {
+//         fprintf(dumpfile, "Stack is not exist\n");
+//         return error;
+//     } else if(error == STACK_HASH_ERR) {
+//         fprintf(dumpfile, "Hash error\n");
+//         return error;
+//     } else if(error == STACK_NO_VOID_ELEM_ERR) {
+//         fprintf(dumpfile, "Not all void elems have NO_ELEM value\n");
+//     }
 
-    return STACK_NO_ERR;
-}
+//     return STACK_NO_ERR;
+// }
 
 stack_error_type put_error(Stack* stk, stack_error_type error) {
     assert(stk->is_exist == 1);

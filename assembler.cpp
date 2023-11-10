@@ -2,9 +2,11 @@
 #include <string.h>
 #include <assert.h>
 #include "assembler.h"
+#include "processor.h"
 #include "stack.h"
 #include <stdlib.h>
 
+LABEL LABELS[NUMBER_OF_LABELS] = {};
 
 static cpu_error_type ctor_op(CPU_OP* operation) {
     operation->name = "";

@@ -1,9 +1,9 @@
-#include "commons.h"
-#include "processor.h"
-#include "cpu_comands.h"
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "processor.h"
+#include "cpu_comands.h"
+#include "commons.h"
 
 
 void dump_processor(CPU* cpu, FILE* dump_file, const char* file, const char* func, const int line) {

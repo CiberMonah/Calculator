@@ -1,8 +1,7 @@
 #ifndef ASSEMBLER_H_INCLUDED
 #define ASSEMBLER_H_INCLUDED
-#include "commons.h"
+
 #include "stack.h"
-#include "processor.h"
 
 const int MAX_ARGN          = 3;
 const int NUMBER_OF_CMD     = 100;
@@ -36,9 +35,6 @@ struct LABEL {
     char* name              = 0;
     int ptr                 = -1;
 };
-
-LABEL LABELS[NUMBER_OF_LABELS] = {};
-
 
 void assembler(FILE* inf, FILE* outf, FILE* log, FILE* bin);
 
