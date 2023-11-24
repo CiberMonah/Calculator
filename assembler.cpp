@@ -106,16 +106,33 @@ static int get_comment(char* str, FILE* source) {
 
 int ptr_lbl = 0;
 
-static int get_label(char* str, int ptr) {
+static int get_label(char* str, int* ptr) {                  //Parse command and look number of arguments;
     int k = 0;
 
-    if(ptr == -1) {         //to detect labels in reading comands
-        while(str[k] != ':' && str[k] != '\n' && str[k] != '\0') k++;                     
-        if(str[k] == ':') return 1;
-        else return 0;
+    if(ptr == nullptr) {         //to detect labels in reading comands
+        while(str[k] != ':' && str[k] != '\n' && str[k] != '\0') 
+            k++;                     
+        if(str[k] == ':') 
+            return 1;
+        else 
+            return 0;
     }
 
     int i = 0;
+
+    //printf("%lld\n", sizeof(ALL_COMMANDS) / sizeof(ALL_COMMANDS[0]));
+    //printf("Command - %s\n", str);
+    for(size_t m = 0; m < sizeof(ALL_COMMANDS) / sizeof(ALL_COMMANDS[0]); m++) {
+        if(!ALL_COMMANDS[m].name) 
+            break;
+        if(strncmp(str, ALL_COMMANDS[m].name, 3) == 0) {
+            *ptr += ALL_COMMANDS[m].argn;
+            printf("Command - %s Num of args - %d\n", ALL_COMMANDS[m].name, ALL_COMMANDS[m].argn);
+        }
+    } 
+
+    
+
     if(str[0] == '\n') return 1;
     while(str[i] != ':' && str[i] != '\n' && str[i] != '\0') i++;                     
     if(str[i] == ':')  {
@@ -124,11 +141,9 @@ static int get_label(char* str, int ptr) {
             j++;
         str[j] = '\0';
 
-        // printf("%s\n", str);
-
         LABELS[ptr_lbl].name = strdup(str + 1 + i);        
 
-        LABELS[ptr_lbl].ptr  = ptr;      
+        LABELS[ptr_lbl].ptr  = *ptr;      
 
         ptr_lbl++;
 
@@ -142,7 +157,7 @@ static void get_all_labels(FILE* source_file) {
     int ptr = 0;
 
     while(fgets(str, 100, source_file) != NULL) {
-        if(get_label(str, ptr) == 1) ptr--;
+        if(get_label(str, &ptr) == 1) ptr--;
         ptr++;
     }
 
@@ -184,7 +199,7 @@ static cpu_commands_id get_command(FILE* inf, char** command) {
         return RPOP;
     } else if(strcmp(*command, "jmp") == 0) {
         return JMP;
-    } else if (get_label(*command, -1) == 1) {
+    } else if (get_label(*command, nullptr) == 1) {
         return LBL;
     } else if (strcmp(*command, "call") == 0) {
         return CALL;

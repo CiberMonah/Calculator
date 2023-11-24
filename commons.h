@@ -44,7 +44,9 @@ struct CPU_OP {
     cpu_registers   cpu_regv [MAX_ARGN]             = {};
 };
 
-const CPU_OP ALL_COMMANDS[50] {                                 //!ORDER IS IMPORTANT!
+//const int NUMBER_OF_CMD = 19;
+
+const CPU_OP ALL_COMMANDS[] {                                 //!ORDER IS IMPORTANT!
                                                                 //The array element is accessed by the command code that matches the number in the array
     {"wrong",           WRONG_COMMAND,  -1,     {},     {},     {}      },
     {"push",            PUSH,           1,      {B},    {},     {}      },
