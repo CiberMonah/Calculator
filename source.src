@@ -1,11 +1,15 @@
 call sum
-push 100
-push 200
+push 50
+sup
+out
+hlt
 
-#This is my first program
+
+#This is my second program
 :sum
 push 100
 push 150
 add
 out
-hlt
+ret
+

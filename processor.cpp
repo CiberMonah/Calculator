@@ -76,6 +76,9 @@ int read_comands(CPU* cpu, const char * FileName) {
 }
 
 void do_comands(CPU* cpu) {
+    Stack function_stack = {};
+    STK_CTOR(&function_stack);
+
     while(true) {
         switch(cpu->comand_buffer[cpu->car]){
             case ADD:
@@ -118,9 +121,13 @@ void do_comands(CPU* cpu) {
                 comand_in(cpu);
                 break;
             case HLT:
+                stack_dtor(&function_stack);
                 return;
             case CALL:
-                command_call(cpu);
+                command_call(cpu, &function_stack);
+                break;
+            case RET:
+                command_ret(cpu, &function_stack);
                 break;
             default:
                 printf("ERROR WRONG COMMAND - %d", cpu->comand_buffer[cpu->car]);

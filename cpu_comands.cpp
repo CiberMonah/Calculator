@@ -31,9 +31,9 @@ void comand_sup(CPU* cpu) {
     int res = 0;
     int number = 0;
     stack_pop(&cpu->stk, &number);
-    res = number;
-    stack_pop(&cpu->stk, &number);
     res -= number;
+    stack_pop(&cpu->stk, &number);
+    res += number;
     stack_push(&cpu->stk, res);
     cpu->car++;
 }
@@ -146,11 +146,18 @@ void comand_out(CPU* cpu) {
     int number = 0;
     stack_pop(&cpu->stk, &number);
     printf("Output: %d\n", number);
+    stack_push(&cpu->stk, number);
     cpu->car++;
 }
 
-void command_call(CPU* cpu) {
+void command_call(CPU* cpu, Stack* function_stack) {
     cpu->car++;
+    stack_push(function_stack, cpu->car);
     cpu->car = cpu->comand_buffer[cpu->car];
+}
+
+void command_ret(CPU* cpu, Stack* function_stack) {
+    stack_pop(function_stack, &(cpu->car));
+    cpu->car++;
 }
 

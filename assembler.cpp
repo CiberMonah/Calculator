@@ -21,16 +21,16 @@ static cpu_error_type ctor_op(CPU_OP* operation) {
 }
 
 
-static cpu_error_type dtor_op(CPU_OP* operation) {
-    operation->com_id = WRONG_COMMAND;
-    operation->argn = -1;
+// static cpu_error_type dtor_op(CPU_OP* operation) {
+//     operation->com_id = WRONG_COMMAND;
+//     operation->argn = -1;
 
-    for(int i = 0; i < MAX_ARGN; i++) {
-        operation->cpu_argv[i] = POISON_VALUE;
-    }
+//     for(int i = 0; i < MAX_ARGN; i++) {
+//         operation->cpu_argv[i] = POISON_VALUE;
+//     }
 
-    return CPU_NO_ERR;
-}
+//     return CPU_NO_ERR;
+// }
 
 static cpu_error_type get_arg(FILE* inf, cpu_arguments argt, cpu_registers* reg, Elem_t* argv, char* lbl) {
     char* str = (char*)calloc(3, sizeof(char));
