@@ -30,6 +30,8 @@ enum cpu_commands_id {
     LBL             = 16,
     CALL            = 17,
     RET             = 18,
+    JE              = 19,
+    JBE             = 20,
 };
 
 struct CPU_OP {
@@ -58,15 +60,17 @@ const CPU_OP ALL_COMMANDS[] {                                 //!ORDER IS IMPORT
     {"sup",             SUP,            0,      {},     {},     {}      },
     {"sin",             SIN,            0,      {},     {},     {}      },
     {"cos",             COS,            0,      {},     {},     {}      },
-    {"in",              IN,             1,      {},     {},     {}      },
+    {"in",              IN,             0,      {},     {},     {}      },
     {"out",             OUT,            0,      {},     {},     {}      },
     {"hlt",             HLT,            0,      {},     {},     {}      },
-    {"rpush",           RPUSH,          1,      {R},    {},     {}      },
     {"rpop",            RPOP,           1,      {R},    {},     {}      },
+    {"rpush",           RPUSH,          1,      {R},    {},     {}      },
     {"jmp",             JMP,            1,      {L},    {},     {}      },
     {"adl",             LBL,            0,      {},     {},     {}      },
     {"call",            CALL,           1,      {L},    {},     {}      },
-    {"ret",             RET,            0,      {},     {},     {}      }
+    {"ret",             RET,            0,      {},     {},     {}      },
+    {"je",              JE ,            1,      {L},    {},     {}      },
+    {"jbe",             JBE ,           1,      {L},    {},     {}      },
 };
 
 

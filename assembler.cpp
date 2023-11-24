@@ -205,6 +205,10 @@ static cpu_commands_id get_command(FILE* inf, char** command) {
         return CALL;
     } else if (strcmp(*command, "ret") == 0) {
         return RET;
+    } else if (strcmp(*command, "je") == 0) {
+        return JE;
+    } else if (strcmp(*command, "jbe") == 0) {
+        return JBE;
     } else {
         return WRONG_COMMAND;
     }
@@ -247,7 +251,7 @@ static cpu_error_type read_commands(FILE* inf, const CPU_OP* operations, CPU_OP*
 
         if(op_buffer[counter]->cpu_argv[0] == POISON_VALUE && op_buffer[counter]->argn > 0 ) {
             if(command_id == PUSH) op_buffer[counter]->com_id = RPUSH;
-            else if (command_id == RPUSH) op_buffer[counter]->com_id = RPOP;
+            else if (command_id == POP) op_buffer[counter]->com_id = RPOP;
         }
         if(err != CPU_NO_ERR)
             return err;
@@ -369,7 +373,7 @@ int main(/*int argc, char *argv[]*/) {
     FILE* listing = nullptr;
     FILE* binary = nullptr;
 
-    if ((in = fopen("source.src", "r")) == NULL) {
+    if ((in = fopen("factorial.src", "r")) == NULL) {
         printf("File reading error");
         return 1;
     }

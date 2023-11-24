@@ -1,0 +1,27 @@
+in
+push rax
+push 1
+push rbx
+push 1
+push rdx
+:factorial
+pop rbx
+push 1
+add
+pop rbx
+mul
+push rbx
+pop rdx
+push 1
+add
+push rdx
+pop rdx
+jbe factorial
+pop rbx
+out
+hlt
+
+
+
+
+

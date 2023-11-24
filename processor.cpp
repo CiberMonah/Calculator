@@ -80,6 +80,7 @@ void do_comands(CPU* cpu) {
     STK_CTOR(&function_stack);
 
     while(true) {
+        printf("%d[%d]\n", cpu->comand_buffer[cpu->car], cpu->car);
         switch(cpu->comand_buffer[cpu->car]){
             case ADD:
                 comand_add(cpu);
@@ -124,15 +125,20 @@ void do_comands(CPU* cpu) {
                 stack_dtor(&function_stack);
                 return;
             case CALL:
-                command_call(cpu, &function_stack);
+                comand_call(cpu, &function_stack);
                 break;
             case RET:
-                command_ret(cpu, &function_stack);
+                comand_ret(cpu, &function_stack);
+                break;
+            case JE:                //compare top of stack and rax if they are equal jump
+                comand_je(cpu);
+                break;
+            case JBE:                //compare top of stack and rax if they are equal jump
+                comand_jbe(cpu);
                 break;
             default:
-                printf("ERROR WRONG COMMAND - %d", cpu->comand_buffer[cpu->car]);
+                printf("ERROR WRONG COMMAND - %d ON CAR - %d", cpu->comand_buffer[cpu->car], cpu->car);
                 return;
         }
-        //printf("%d[%d]\n", cpu->comand_buffer[cpu->car], cpu->car);
     }
 }

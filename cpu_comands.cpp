@@ -150,14 +150,36 @@ void comand_out(CPU* cpu) {
     cpu->car++;
 }
 
-void command_call(CPU* cpu, Stack* function_stack) {
+void comand_call(CPU* cpu, Stack* function_stack) {
     cpu->car++;
     stack_push(function_stack, cpu->car);
     cpu->car = cpu->comand_buffer[cpu->car];
 }
 
-void command_ret(CPU* cpu, Stack* function_stack) {
+void comand_ret(CPU* cpu, Stack* function_stack) {
     stack_pop(function_stack, &(cpu->car));
     cpu->car++;
 }
 
+void comand_je(CPU* cpu) {
+    cpu->car++;
+    int number = 0;
+    stack_pop(&cpu->stk, &number);
+    stack_push(&cpu->stk, number);
+    if(number == cpu->rax) {
+        cpu->car = cpu->comand_buffer[cpu->car];
+    }
+    return;
+}
+
+void comand_jbe(CPU* cpu) {
+    cpu->car++;
+    int number = 0;
+    stack_pop(&cpu->stk, &number);
+    stack_push(&cpu->stk, number);
+    printf("number - %d, rbx - %d", number, cpu->rbx);
+    if(number <= cpu->rax) {
+        cpu->car = cpu->comand_buffer[cpu->car];
+    }
+    return;
+}
