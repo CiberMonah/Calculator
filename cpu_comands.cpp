@@ -5,13 +5,15 @@
 
 void comand_push(CPU* cpu) {
     cpu->car ++;
-    char number = cpu->comand_buffer[cpu->car];
+    unsigned char number = (unsigned char)cpu->comand_buffer[cpu->car];
     stack_push(&cpu->stk, (int)number);
+    cpu->car++;
 }
 
 void comand_pop(CPU* cpu) {
     int number = 0;
     stack_pop(&cpu->stk, &number);
+    cpu->car++;
 }
 
 void comand_add(CPU* cpu) {
@@ -22,6 +24,7 @@ void comand_add(CPU* cpu) {
     stack_pop(&cpu->stk, &number);
     res += number;
     stack_push(&cpu->stk, res);
+    cpu->car++;
 }
 
 void comand_sup(CPU* cpu) {
@@ -32,6 +35,7 @@ void comand_sup(CPU* cpu) {
     stack_pop(&cpu->stk, &number);
     res -= number;
     stack_push(&cpu->stk, res);
+    cpu->car++;
 }
 
 void comand_mul(CPU* cpu) {
@@ -42,6 +46,7 @@ void comand_mul(CPU* cpu) {
     stack_pop(&cpu->stk, &number);
     res *= number;
     stack_push(&cpu->stk, res);
+    cpu->car++;
 }
 
 void comand_div(CPU* cpu) {
@@ -52,6 +57,7 @@ void comand_div(CPU* cpu) {
     stack_pop(&cpu->stk, &number);
     res /= number;
     stack_push(&cpu->stk, res);
+    cpu->car++;
 }
 
 void comand_cos(CPU* cpu) {
@@ -60,6 +66,7 @@ void comand_cos(CPU* cpu) {
     stack_pop(&cpu->stk, &number);
     res = (int)cos((double)number);
     stack_push(&cpu->stk, res);
+    cpu->car++;
 }
 
 void comand_sin(CPU* cpu) {
@@ -68,6 +75,7 @@ void comand_sin(CPU* cpu) {
     stack_pop(&cpu->stk, &number);
     res = (int)sin((double)number);
     stack_push(&cpu->stk, res);
+    cpu->car++;;
 }
 
 void comand_sqrt(CPU* cpu) {
@@ -76,6 +84,7 @@ void comand_sqrt(CPU* cpu) {
     stack_pop(&cpu->stk, &number);
     res = (int)sqrt((double)number);
     stack_push(&cpu->stk, res);
+    cpu->car++;
 }
 
 void comand_rpush(CPU* cpu) {
@@ -99,6 +108,7 @@ void comand_rpush(CPU* cpu) {
         default:
             break;
     }
+    cpu->car++;
 }
 
 void comand_rpop(CPU* cpu) {
@@ -120,6 +130,7 @@ void comand_rpop(CPU* cpu) {
         default:
             break;
     }
+    cpu->car++;
 }
 
 
@@ -128,11 +139,18 @@ void comand_in(CPU* cpu) {
     int number = 0;
     scanf("%d", &number);
     stack_push(&cpu->stk, number);
+    cpu->car++;
 }
 
 void comand_out(CPU* cpu) {
     int number = 0;
     stack_pop(&cpu->stk, &number);
-    printf("%d ", number);
+    printf("Output: %d\n", number);
+    cpu->car++;
+}
+
+void command_call(CPU* cpu) {
+    cpu->car++;
+    cpu->car = cpu->comand_buffer[cpu->car];
 }
 

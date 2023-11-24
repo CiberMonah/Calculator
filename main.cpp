@@ -6,7 +6,7 @@
 int main(void) {
     FILE* source = nullptr;
     
-    if ((source = fopen("proc_dump.txt", "w")) == NULL) {
+    if ((source = fopen("binary.bin", "rb")) == NULL) {
         printf("File reading error");
         return 1;
     }
@@ -16,6 +16,8 @@ int main(void) {
     cpu_init(&cpu);
 
     read_comands(&cpu, "binary.bin");
+
+    do_comands(&cpu);
 
     CPU_DUMP(&cpu, source);
 

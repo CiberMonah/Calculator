@@ -15,5 +15,6 @@ void comand_pop (CPU* cpu);
 void comand_push(CPU* cpu);
 void comand_rpop (CPU* cpu);
 void comand_rpush(CPU* cpu);
+void command_call(CPU* cpu);
 
 #endif

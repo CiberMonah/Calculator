@@ -91,10 +91,10 @@ void do_comands(CPU* cpu) {
                 comand_pop(cpu);
                 break;
             case RPUSH:
-                comand_push(cpu);
+                comand_rpush(cpu);
                 break;
             case RPOP:
-                comand_pop(cpu);
+                comand_rpop(cpu);
                 break;
             case OUT:
                 comand_out(cpu);
@@ -119,10 +119,13 @@ void do_comands(CPU* cpu) {
                 break;
             case HLT:
                 return;
+            case CALL:
+                command_call(cpu);
+                break;
             default:
                 printf("ERROR WRONG COMMAND - %d", cpu->comand_buffer[cpu->car]);
                 return;
         }
-        cpu->car++;         //next command
+        //printf("%d[%d]\n", cpu->comand_buffer[cpu->car], cpu->car);
     }
 }

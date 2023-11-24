@@ -1,0 +1,11 @@
+call sum
+push 100
+push 200
+
+#This is my first program
+:sum
+push 100
+push 150
+add
+out
+hlt

@@ -127,13 +127,13 @@ static int get_label(char* str, int* ptr) {                  //Parse command and
             break;
         if(strncmp(str, ALL_COMMANDS[m].name, 3) == 0) {
             *ptr += ALL_COMMANDS[m].argn;
-            printf("Command - %s Num of args - %d\n", ALL_COMMANDS[m].name, ALL_COMMANDS[m].argn);
+            //printf("Command - %s Num of args - %d\n", ALL_COMMANDS[m].name, ALL_COMMANDS[m].argn);
         }
     } 
 
     
 
-    if(str[0] == '\n') return 1;
+    if(str[0] == '\n' || str[0] == '#') return 1;
     while(str[i] != ':' && str[i] != '\n' && str[i] != '\0') i++;                     
     if(str[i] == ':')  {
         int j = i;
@@ -369,7 +369,7 @@ int main(/*int argc, char *argv[]*/) {
     FILE* listing = nullptr;
     FILE* binary = nullptr;
 
-    if ((in = fopen("source.txt", "r")) == NULL) {
+    if ((in = fopen("source.src", "r")) == NULL) {
         printf("File reading error");
         return 1;
     }
